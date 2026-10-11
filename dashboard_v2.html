@@ -1,0 +1,2135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Monitoramento Operacional WMS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#edf1f7;
+}
+
+.sidebar{
+position:fixed;
+top:0;
+right:0;
+width:320px;
+height:100%;
+background:#113d9a;
+color:white;
+padding:20px;
+overflow-y:auto;
+transition:.3s;
+z-index:1000;
+}
+
+.sidebar.hidden{
+transform:translateX(100%);
+}
+
+.logo{
+font-size:28px;
+font-weight:700;
+margin-bottom:30px;
+text-align:center;
+}
+
+.menu-item{
+padding:12px;
+margin-bottom:8px;
+border-radius:12px;
+cursor:pointer;
+transition:.3s;
+}
+
+.menu-item:hover{
+background:#2d60d7;
+}
+
+.main{
+padding:25px;
+transition:.3s;
+}
+
+.header{
+position:relative;
+background:linear-gradient(90deg,#113d9a,#3367e2);
+color:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 6px 20px rgba(0,0,0,.15);
+}
+
+.data-operacao{
+color:#ffd600;
+font-weight:700;
+font-size:15px;
+}
+
+.ultima-atualizacao{
+color:#ffffff;
+font-weight:600;
+font-size:12px;
+}
+
+.menu-btn{
+position:absolute;
+top:20px;
+right:20px;
+width:55px;
+height:55px;
+border:none;
+border-radius:12px;
+background:rgba(255,255,255,.15);
+color:white;
+font-size:28px;
+cursor:pointer;
+}
+
+.menu-btn:hover{
+background:rgba(255,255,255,.25);
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-top:25px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:16px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+transition:.3s;
+}
+
+.card-separadores{
+border-left:8px solid #1e88e5;
+}
+
+.card-empilhadores{
+border-left:8px solid #00c853;
+}
+
+.card-bipagem{
+border-left:8px solid #ff9800;
+}
+
+.card-ots{
+border-left:8px solid #9c27b0;
+}
+
+.card-critico{
+border-left:8px solid #e53935;
+}
+
+.card-atencao{
+border-left:8px solid #fbc02d;
+}
+
+.card-separadores .value{
+color:#1e88e5;
+}
+
+.card-empilhadores .value{
+color:#00c853;
+}
+
+.card-bipagem .value{
+color:#ff9800;
+}
+
+.card-ots .value{
+color:#9c27b0;
+}
+
+.card-critico .value{
+color:#e53935;
+}
+
+.card-atencao .value{
+color:#fbc02d;
+}
+
+.card:hover{
+transform:translateY(-8px);
+box-shadow:0 15px 30px rgba(0,0,0,.15);
+}
+
+.card h3{
+font-size:14px;
+color:#666;
+margin-bottom:10px;
+}
+
+.value{
+font-size:38px;
+font-weight:700;
+}
+
+.section{
+margin-top:25px;
+background:white;
+padding:20px;
+border-radius:16px;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+overflow-x:auto;
+}
+
+.section:hover{
+transform:translateY(-3px);
+transition:.3s;
+}
+
+.section-title{
+font-size:40px;
+font-weight:700;
+color:#113d9a;
+margin-bottom:15px;
+text-align:center;
+text-transform:uppercase;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#113d9a;
+color:white;
+padding:6px;
+font-size:13px;
+}
+
+.producao{
+font-weight:700;
+font-size:13px;
+color:#0f4bcc;
+}
+
+#txtWMS,
+#txtGET{
+font-size:16px;
+font-weight:600;
+color:#222;
+margin-bottom:6px;
+}
+
+.barra-container{
+width:100%;
+height:24px;
+background:#d3d3d3;
+border-radius:12px;
+overflow:hidden;
+margin-top:8px;
+margin-bottom:20px;
+}
+
+.barra-wms{
+height:100%;
+background:#2f57ff;
+color:white;
+font-weight:bold;
+font-size:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.barra-get{
+height:100%;
+background:#ff8800;
+color:white;
+font-weight:bold;
+font-size:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.lbl-participacao{
+font-size:16px;
+font-weight:700;
+color:#000;
+margin-top:10px;
+text-align:left;
+padding-left:15px;
+}
+
+td{
+padding:4px 8px;
+border-bottom:1px solid #ddd;
+text-align:center;
+color:#222;
+font-weight:500;
+font-size:13px;
+white-space:nowrap;
+}
+
+tr:hover{
+background:#f3f7ff;
+}
+
+tbody tr:nth-child(even){
+background:#f7f9fc;
+}
+
+.modal{
+display:none;
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.65);
+z-index:9999;
+}
+
+.modal-content{
+background:#fff;
+width:95%;
+height:90%;
+margin:2% auto;
+border-radius:15px;
+padding:20px;
+overflow:auto;
+}
+
+.fechar{
+float:right;
+font-size:32px;
+cursor:pointer;
+font-weight:bold;
+color:#e53935;
+margin-left:20px;
+margin-right:10px;
+line-height:48px;
+}
+
+.modal-titulo{
+font-size:28px;
+font-weight:700;
+color:#113d9a;
+margin-bottom:20px;
+}
+
+.modal table{
+width:100%;
+border-collapse:collapse;
+}
+
+.modal th{
+background:#113d9a;
+color:#fff;
+padding:8px;
+}
+
+.modal td{
+padding:6px;
+border-bottom:1px solid #ddd;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar hidden" id="sidebar">
+
+<div class="logo">
+
+<div id="btnFecharMenu" style="
+text-align:right;
+cursor:pointer;
+font-size:28px;
+margin-bottom:15px;
+">
+✖
+</div>
+
+📦 WMS Analytics
+
+</div>
+
+<div class="menu-item">📊 Dashboard</div>
+<div class="menu-item">📦 Produção</div>
+<div class="menu-item">🚜 Empilhadores</div>
+<div class="menu-item">👷 Separadores</div>
+<div class="menu-item">🏆 Ranking</div>
+<div class="menu-item" id="menuEvolucao">
+
+📈 Evolução por Hora
+</div>
+
+<div class="menu-item" id="menuHistorico">
+📚 Histórico
+</div>
+
+<div class="menu-item" id="menuTimeline">
+📈 Timeline
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="header">
+
+<button id="menuBtn" class="menu-btn">
+☰
+</button>
+
+<h1>MONITORAMENTO OPERACIONAL WMS</h1>
+
+<h2>Centro de Distribuição B50</h2>
+
+<p id="dataOperacao"></p>
+
+<p id="ultimaAtualizacao"></p>
+
+</div>
+
+<div class="cards">
+
+<div class="card card-separadores">
+<h3> Produção Separadores</h3>
+<div class="value" id="totalSeparadores">0</div>
+</div>
+
+<div class="card card-empilhadores">
+<h3> Produção Empilhadores</h3>
+<div class="value" id="totalEmpilhadores">0</div>
+</div>
+
+<div class="card card-ots">
+<h3> OT's</h3>
+<div class="value" id="totalOTs">0</div>
+</div>
+
+<div class="card card-critico" id="cardZerados">
+<h3> Zerados</h3>
+<div class="value" id="totalZerados">0</div>
+</div>
+
+<div class="card card-atencao" id="cardAtencao">
+<h3> Alertas Atenção</h3>
+<div class="value" id="totalAtencao">0</div>
+</div>
+
+<div class="card card-critico" id="cardCriticos">
+<h3> Alertas Críticos</h3>
+<div class="value" id="totalCriticos">0</div>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">
+
+PRODUÇÃO SEPARADORES
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>Usuário</th>
+<th>Nome</th>
+<th>Função</th>
+<th>Produção</th>
+<th>Unidade</th>
+<th>Bipagem</th>
+<th>OT's</th>
+</tr>
+</thead>
+
+<tbody id="tblSeparadores">
+
+</tbody>
+
+</table>
+
+<div class="section">
+
+<div class="section-title">
+<div class="section">
+
+<div class="section-title">
+
+PRODUÇÃO EMPILHADORES
+</div>
+
+<table>
+
+<thead>
+<tr>
+<th>Usuário</th>
+<th>Nome</th>
+<th>Função</th>
+<th>Produção</th>
+<th>Unidade</th>
+</tr>
+</thead>
+
+<tbody id="tblEmpilhadores">
+
+</tbody>
+
+</table>
+
+</div>
+
+<div class="section">
+
+<div class="section-title">
+📊 PARTICIPAÇÃO WMS X GET
+</div>
+
+<div class="lbl-participacao" id="txtWMS">
+WMS - 0%
+</div>
+
+<div class="barra-container">
+    <div id="barraWMS" class="barra-wms"></div>
+</div>
+
+<div class="lbl-participacao" id="txtGET">
+GET - 0%
+</div>
+
+<div class="barra-container">
+    <div id="barraGET" class="barra-get"></div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="modal" class="modal">
+
+<div class="modal-content">
+
+<span class="fechar" id="fecharModal">
+✖
+</span>
+
+<div id="conteudoModal">
+
+</div>
+
+</div>
+
+</div>
+
+
+<script src="dados.js"></script>
+
+<script>
+
+const sidebar =
+document.getElementById("sidebar");
+
+const btn =
+document.getElementById("menuBtn");
+
+btn.onclick = () => {
+
+sidebar.classList.toggle("hidden");
+
+};
+
+document.getElementById("btnFecharMenu")
+.onclick = () => {
+
+sidebar.classList.add("hidden");
+
+};
+
+const separadores =
+dados.producao.separadores;
+
+const empilhadores =
+dados.producao.empilhadores;
+
+const totalSeparadores =
+separadores.reduce(
+(a,b)=>a+Number(b.producao||0),
+0
+);
+
+const totalEmpilhadores =
+empilhadores.reduce(
+(a,b)=>a+Number(b.producao||0),
+0
+);
+
+const totalZerados =
+dados.base.reduce(
+(a,b)=>a+Number(b.zerados||0),
+0
+);
+
+const totalOTs =
+separadores.reduce(
+(a,b)=>a+Number(b.ots||0),
+0
+);
+
+document.getElementById("totalSeparadores").innerText =
+totalSeparadores.toLocaleString("pt-BR");
+
+document.getElementById("totalEmpilhadores").innerText =
+totalEmpilhadores.toLocaleString("pt-BR");
+
+document.getElementById("totalZerados").innerText =
+totalZerados.toLocaleString("pt-BR");
+
+document.getElementById("totalOTs").innerText =
+totalOTs.toLocaleString("pt-BR");
+
+const ultimoEvento =
+dados.tmpEventos[dados.tmpEventos.length - 1];
+
+const ultimaHora =
+ultimoEvento.datahora.substring(0,13);
+
+const eventosHoraAtual =
+dados.tmpEventos.filter(item => {
+
+    if(!item.datahora) return false;
+
+    return item.datahora.substring(0,13) === ultimaHora;
+
+});
+
+console.log("Última Hora:", ultimaHora);
+console.log("Eventos da Hora:", eventosHoraAtual.length);
+
+
+let criticos = 0;
+let atencao = 0;
+let verificar = 0;
+let normal = 0;
+
+eventosHoraAtual.forEach(item=>{
+
+    const status =
+    (item.obs || "").toUpperCase();
+
+    if(status === "NORMAL"){
+
+        normal++;
+
+    }
+    else if(status === "VERIFICAR"){
+
+        verificar++;
+
+    }
+    else if(status === "ATENÇÃO"){
+
+        atencao++;
+
+    }
+    else if(status === "CRÍTICO"){
+
+        criticos++;
+
+    }
+
+});
+
+document.getElementById("totalCriticos").innerText =
+criticos;
+
+document.getElementById("totalAtencao").innerText =
+atencao;
+
+let qtdWMS = 0;
+let qtdGET = 0;
+
+const eventosEmpilhadores =
+dados.tmpEventos.filter(item => {
+
+    return (
+        item.funcao &&
+        item.funcao.toUpperCase().includes("EMPILHADEIRA")
+    );
+
+});
+
+eventosEmpilhadores.forEach(item=>{
+
+    const origem =
+    (item.origem || "").toUpperCase().trim();
+
+    if(origem === "WMS"){
+
+        qtdWMS++;
+
+    }
+    else if(origem === "GET"){
+
+        qtdGET++;
+
+    }
+
+});
+
+console.log("WMS:", qtdWMS);
+console.log("GET:", qtdGET);
+
+console.log("WMS:", qtdWMS);
+console.log("GET:", qtdGET);
+
+const totalOrigens =
+qtdWMS + qtdGET;
+
+const percWMS =
+totalOrigens > 0
+? (qtdWMS / totalOrigens) * 100
+: 0;
+
+const percGET =
+totalOrigens > 0
+? (qtdGET / totalOrigens) * 100
+: 0;
+
+document.getElementById("txtWMS").innerHTML =
+`WMS (${qtdWMS} PALLETS)`;
+
+document.getElementById("txtGET").innerHTML =
+`GET (${qtdGET} PALLETS)`;
+
+document.getElementById("barraWMS").style.width =
+percWMS + "%";
+
+document.getElementById("barraGET").style.width =
+percGET + "%";
+
+document.getElementById("barraWMS").innerText =
+Math.round(percWMS) + "%";
+
+document.getElementById("barraGET").innerText =
+Math.round(percGET) + "%";
+
+const tbEmp =
+document.getElementById("tblEmpilhadores");
+
+empilhadores.forEach(l=>{
+
+tbEmp.innerHTML += `
+<tr>
+<td>${l.usuario}</td>
+<td>${l.nome}</td>
+<td>${l.funcao}</td>
+<td class="producao">${l.producao}</td>
+<td>${l.unidade}</td>
+</tr>
+`;
+
+});
+
+const somaEmp =
+empilhadores.reduce(
+(a,b)=>a+Number(b.producao||0),
+0
+);
+
+tbEmp.innerHTML += `
+<tr style="
+background:#113d9a;
+font-weight:bold;
+">
+
+<td colspan="3" style="color:white;">
+Total Geral
+</td>
+
+<td style="color:white;">
+${somaEmp}
+</td>
+
+<td style="color:white;">
+PALLETS
+</td>
+
+</tr>
+`;
+
+const tbSep =
+document.getElementById("tblSeparadores");
+
+separadores.forEach(l=>{
+
+tbSep.innerHTML += `
+<tr>
+<td>${l.usuario}</td>
+<td>${l.nome}</td>
+<td>${l.funcao}</td>
+<td class="producao">${l.producao}</td>
+<td>${l.unidade}</td>
+<td>${l.bipagem}</td>
+<td>${l.ots}</td>
+</tr>
+`;
+
+});
+
+const somaSep =
+separadores.reduce(
+(a,b)=>a+Number(b.producao||0),
+0
+);
+
+const somaBip =
+separadores.reduce(
+(a,b)=>a+Number(b.bipagem||0),
+0
+);
+
+const somaOTS =
+separadores.reduce(
+(a,b)=>a+Number(b.ots||0),
+0
+);
+
+tbSep.innerHTML += `
+<tr style="
+background:#113d9a;
+color:white;
+font-weight:bold;
+">
+
+<td colspan="3" style="color:white;">
+Total Geral
+</td>
+
+<td style="color:white;">
+${somaSep}
+</td>
+
+<td style="color:white;">
+CAIXAS
+</td>
+
+<td style="color:white;">
+${somaBip}
+</td>
+
+<td style="color:white;">
+${somaOTS}
+</td>
+</tr>
+`;
+
+const agora = new Date();
+
+const primeiraData =
+dados.tmpEventos[0].datahora.substring(0,10);
+
+document.getElementById("dataOperacao").innerHTML =
+'<span class="data-operacao">📅 Data Operação: ' +
+primeiraData +
+'</span>';
+
+
+document.getElementById("ultimaAtualizacao").innerHTML =
+'<span class="ultima-atualizacao">🕒 Última Atualização: ' +
+agora.toLocaleTimeString("pt-BR") +
+'</span>';
+
+console.log(dados.tmpEventos[0]);
+
+console.log(
+dados.tmpEventos[dados.tmpEventos.length - 1]
+);
+
+const modal =
+document.getElementById("modal");
+
+document.getElementById("fecharModal")
+.onclick = () => {
+
+modal.style.display = "none";
+
+};
+
+document.getElementById("cardZerados")
+.onclick = () => {
+
+const zerados =
+dados.base.filter(x =>
+Number(x.zerados || 0) > 0
+);
+
+let html = `
+<div class="modal-titulo">
+ZERADOS
+</div>
+
+<table>
+
+<tr>
+<th>Usuário</th>
+<th>Quantidade</th>
+<th>UM</th>
+<th>Material</th>
+<th>Descrição</th>
+<th>OT</th>
+<th>UD</th>
+</tr>
+`;
+
+zerados.forEach(item=>{
+
+html += `
+<tr>
+<td>${item.usuario}</td>
+<td>${item.zerados}</td>
+<td>${item.uma}</td>
+<td>${item.material}</td>
+<td>${item.produto}</td>
+<td>${item.ot}</td>
+<td>${item.ud}</td>
+
+</tr>
+`;
+
+});
+
+html += "</table>";
+
+document.getElementById("conteudoModal")
+.innerHTML = html;
+
+modal.style.display = "block";
+
+};
+
+document.getElementById("cardCriticos")
+.onclick = () => {
+
+let html = `
+<div class="modal-titulo">
+ALERTAS CRÍTICOS
+</div>
+
+<table>
+
+<tr>
+<th>Usuário</th>
+<th>Nome</th>
+<th>Intervalo</th>
+<th>Picking</th>
+<th>Material</th>
+<th>Descrição</th>
+<th>OT</th>
+<th>Origem</th>
+<th>Hora</th>
+</tr>
+`;
+
+eventosHoraAtual.forEach(item=>{
+
+    if(item.obs === "CRÍTICO"){
+
+        html += `
+<tr>
+<td>${item.usuario}</td>
+<td>${item.nome}</td>
+<td style="font-weight:bold;color:#e53935;">
+${item.intervaloAjustado}
+</td>
+<td>${item.picking}</td>
+<td>${item.material || ""}</td>
+<td>${item.descricao || ""}</td>
+<td>${item.ot || ""}</td>
+<td>${item.origem}</td>
+<td>${item.datahora}</td>
+</tr>
+        `;
+
+    }
+
+});
+
+html += "</table>";
+
+document.getElementById("conteudoModal").innerHTML = html;
+
+modal.style.display = "block";
+
+};
+
+document.getElementById("cardAtencao")
+.onclick = () => {
+
+let html = `
+<div class="modal-titulo">
+ALERTAS ATENÇÃO
+</div>
+
+<table>
+
+<tr>
+<th>Usuário</th>
+<th>Nome</th>
+<th>Intervalo</th>
+<th>Picking</th>
+<th>Material</th>
+<th>Descrição</th>
+<th>OT</th>
+<th>Origem</th>
+<th>Hora</th>
+</tr>
+`;
+
+eventosHoraAtual.forEach(item=>{
+
+    if(item.obs === "ATENÇÃO"){
+
+        html += `
+<tr>
+<td>${item.usuario}</td>
+<td>${item.nome}</td>
+
+<td style="font-weight:bold;color:#fbc02d;">
+${item.intervaloAjustado}
+</td>
+
+<td>${item.picking}</td>
+<td>${item.material || ""}</td>
+<td>${item.descricao || ""}</td>
+<td>${item.ot || ""}</td>
+<td>${item.origem}</td>
+<td>${item.datahora}</td>
+</tr>
+`;
+
+    }
+
+});
+
+html += "</table>";
+
+document.getElementById("conteudoModal").innerHTML =
+html;
+
+modal.style.display = "block";
+
+};
+
+const horaInicial =
+ultimaHora.substring(11) + ":00";
+
+const proximaHora =
+String(
+Number(ultimaHora.substring(11,13)) + 1
+).padStart(2,"0") + ":00:00";
+
+const dataGeracao =
+agora.toLocaleDateString("pt-BR")
++ " " +
+agora.toLocaleTimeString("pt-BR");
+
+document.getElementById("menuHistorico")
+.onclick = () => {
+
+const hist = dados.histProducao || [];
+
+const dias = {
+"05/10/2026":"SEGUNDA",
+"06/10/2026":"TERÇA",
+"07/10/2026":"QUARTA",
+"08/10/2026":"QUINTA",
+"09/10/2026":"SEXTA",
+"10/10/2026":"SÁBADO"
+};
+
+const sep = {};
+const emp = {};
+
+hist.forEach(item=>{
+
+    const usuario = item.usuario;
+    const nome = item.nome;
+    const data = item.data_operacao;
+
+console.log(
+item.usuario,
+"[" + item.data_operacao + "]"
+);
+``
+
+    const producao = Number(item.producao || 0);
+
+    const dia = dias[data] || data;
+
+    if(item.unidade === "CAIXAS"){
+
+        if(!sep[usuario]){
+
+            sep[usuario] = {
+                nome:nome,
+                SEGUNDA:0,
+                TERÇA:0,
+                QUARTA:0,
+                QUINTA:0,
+                SEXTA:0,
+                SÁBADO:0,
+                total:0
+            };
+
+        }
+
+    sep[usuario][dia] =
+    producao;
+
+    sep[usuario].total += producao;
+
+}
+else{
+
+        if(!emp[usuario]){
+
+            emp[usuario] = {
+                nome:nome,
+                SEGUNDA:0,
+                TERÇA:0,
+                QUARTA:0,
+                QUINTA:0,
+                SEXTA:0,
+                SÁBADO:0,
+                total:0
+            };
+
+        }
+
+        emp[usuario][dia] =
+        producao;
+
+        emp[usuario].total += producao;
+
+    }
+
+});
+
+let listaSep =
+Object.values(sep)
+.sort((a,b)=>b.total-a.total);
+
+let listaEmp =
+Object.values(emp)
+.sort((a,b)=>b.total-a.total);
+
+const totalSep =
+listaSep.reduce(
+(a,b)=>a+b.total,
+0
+);
+
+const totalEmp =
+listaEmp.reduce(
+(a,b)=>a+b.total,
+0
+);
+let html = `
+
+<div class="modal-titulo">
+
+📚 HISTÓRICO DE PRODUÇÃO
+
+<button
+id="btnImagemHistorico"
+style="
+float:right;
+background:#00c853;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+">
+📸 Gerar Imagem
+</button>
+
+</div>
+
+<div id="areaHistorico">
+
+<h2 style="
+background:#000;
+color:#fff;
+padding:8px;
+text-align:center;
+margin-bottom:0;
+">
+
+PRODUÇÃO SEMANAL - SEPARADORES
+</h2>
+
+<table>
+
+<tr>
+<th>RANK</th>
+<th>COLABORADOR</th>
+<th>SEG</th>
+<th>TER</th>
+<th>QUA</th>
+<th>QUI</th>
+<th>SEX</th>
+<th>SÁB</th>
+<th>TOTAL</th>
+<th>%</th>
+</tr>
+
+`;
+
+listaSep.forEach((l,index)=>{
+
+const perc =
+totalSep > 0
+? ((l.total / totalSep)*100)
+: 0;
+
+let cor = "#f8696b";
+
+if(perc >= 30){
+
+    cor = "#63be7b";
+
+}
+else if(perc >= 20){
+
+    cor = "#ffeb84";
+
+}
+
+html += `
+
+<tr>
+
+<td>${index+1}</td>
+
+<td>${l.nome}</td>
+
+<td>${l.SEGUNDA}</td>
+<td>${l.TERÇA}</td>
+<td>${l.QUARTA}</td>
+<td>${l.QUINTA}</td>
+<td>${l.SEXTA}</td>
+<td>${l.SÁBADO}</td>
+
+<td style="font-weight:bold">
+${l.total}
+</td>
+
+<td style="
+background:${cor};
+font-weight:bold;
+">
+${perc.toFixed(0)}%
+</td>
+
+</tr>
+
+`;
+
+});
+
+html += `
+
+<tr style="
+background:#000;
+color:#fff;
+font-weight:bold;
+">
+
+<td colspan="8" style="color:#fff;">
+TOTAL GERAL
+</td>
+
+<td style="color:#fff;">
+${totalSep}
+</td>
+
+<td style="color:#fff;">
+100%
+</td>
+
+</tr>
+
+</tr>
+
+</table>
+
+<br><br>
+
+<h2 style="
+background:#000;
+color:#fff;
+padding:8px;
+text-align:center;
+margin-bottom:0;
+">
+PRODUÇÃO SEMANAL - EMPILHADORES
+</h2>
+
+<table>
+
+<tr>
+<th>RANK</th>
+<th>COLABORADOR</th>
+<th>SEG</th>
+<th>TER</th>
+<th>QUA</th>
+<th>QUI</th>
+<th>SEX</th>
+<th>SÁB</th>
+<th>TOTAL</th>
+<th>%</th>
+</tr>
+
+`;
+
+listaEmp.forEach((l,index)=>{
+
+const perc =
+totalEmp > 0
+? ((l.total / totalEmp)*100)
+: 0;
+
+let cor = "#f8696b";
+
+if(perc >= 25){
+
+    cor = "#63be7b";
+
+}
+else if(perc >= 15){
+
+    cor = "#ffeb84";
+
+}
+
+html += `
+
+<tr>
+
+<td>${index+1}</td>
+
+<td>${l.nome}</td>
+
+<td>${l.SEGUNDA}</td>
+<td>${l.TERÇA}</td>
+<td>${l.QUARTA}</td>
+<td>${l.QUINTA}</td>
+<td>${l.SEXTA}</td>
+<td>${l.SÁBADO}</td>
+
+<td style="font-weight:bold">
+${l.total}
+</td>
+
+<td style="
+background:${cor};
+font-weight:bold;
+">
+${perc.toFixed(0)}%
+</td>
+
+</tr>
+
+`;
+
+});
+
+html += `
+
+<tr style="
+background:#000;
+color:#fff;
+font-weight:bold;
+">
+
+<td colspan="8" style="color:#fff;">
+TOTAL GERAL
+</td>
+
+<td style="color:#fff;">
+${totalEmp}
+</td>
+
+<td style="color:#fff;">
+100%
+</td>
+
+</td>
+
+</tr>
+
+</table>
+
+`;
+
+html += `</div>`;
+
+document.getElementById("conteudoModal")
+.innerHTML = html;
+
+modal.style.display = "block";
+
+document.getElementById("btnImagemHistorico")
+.onclick = function(){
+
+    html2canvas(
+        document.getElementById("areaHistorico"),
+        { scale: 2 }
+    ).then(canvas => {
+
+        const link =
+        document.createElement("a");
+
+        link.download =
+        "Historico_Producao.png";
+
+        link.href =
+        canvas.toDataURL("image/png");
+
+        link.click();
+
+    });
+
+};
+
+};
+
+document.getElementById("menuEvolucao")
+.onclick = () => {
+
+const horas = {};
+
+const horasSeparadores = {};
+const horasEmpilhadores = {};
+
+let totalGeral = 0;
+let totalSeparadores = 0;
+let totalEmpilhadores = 0;
+
+dados.tmpEventos.forEach(item => {
+
+    if(!item.datahora) return;
+
+    const hora =
+    item.datahora.substring(11,13) + ":00";
+
+    const producao =
+    Number(item.producao || 0);
+
+    const funcao =
+    (item.funcao || "").toUpperCase();
+
+    horas[hora] =
+    (horas[hora] || 0) + producao;
+
+    totalGeral += producao;
+
+    if(funcao.includes("EMPILH")){
+
+        horasEmpilhadores[hora] =
+        (horasEmpilhadores[hora] || 0) + producao;
+
+        totalEmpilhadores += producao;
+
+    }else{
+
+        horasSeparadores[hora] =
+        (horasSeparadores[hora] || 0) + producao;
+
+        totalSeparadores += producao;
+
+    }
+
+});
+
+const lista =
+Object.entries(horas)
+.sort((a,b) => {
+
+    const hA =
+    Number(a[0].substring(0,2));
+
+    const hB =
+    Number(b[0].substring(0,2));
+
+    const ordemA =
+    hA >= 22 ? hA : hA + 24;
+
+    const ordemB =
+    hB >= 22 ? hB : hB + 24;
+
+    return ordemA - ordemB;
+
+});
+
+if(lista.length === 0){
+    return;
+}
+
+const maior =
+Math.max(...lista.map(x => x[1]));
+
+const melhorHora =
+lista.reduce((a,b)=>
+a[1] > b[1] ? a : b
+);
+
+const media =
+Math.round(totalGeral / lista.length);
+
+const listaSeparadores =
+Object.entries(horasSeparadores)
+.sort((a,b) => {
+
+    const hA = Number(a[0].substring(0,2));
+    const hB = Number(b[0].substring(0,2));
+
+    return (hA >= 22 ? hA : hA + 24) -
+           (hB >= 22 ? hB : hB + 24);
+
+});
+
+const listaEmpilhadores =
+Object.entries(horasEmpilhadores)
+.sort((a,b) => {
+
+    const hA = Number(a[0].substring(0,2));
+    const hB = Number(b[0].substring(0,2));
+
+    return (hA >= 22 ? hA : hA + 24) -
+           (hB >= 22 ? hB : hB + 24);
+
+});
+
+let html = `
+
+<button
+id="btnImagemEvolucao"
+style="
+float:right;
+background:#00c853;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+">
+📸 Gerar Imagem
+</button>
+
+<div id="areaEvolucao">
+<div class="modal-titulo">
+
+📈 EVOLUÇÃO DA OPERAÇÃO
+
+</div>
+
+<div id="areaEvolucao"
+style="
+background:white;
+padding:20px;
+">
+
+<div style="
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:25px;
+">
+
+<div style="
+background:#113d9a;
+color:#fff;
+padding:20px;
+border-radius:15px;
+text-align:center;
+">
+
+<div style="font-size:14px;">
+PRODUÇÃO TOTAL
+</div>
+
+<div style="
+font-size:34px;
+font-weight:700;
+">
+${totalGeral.toLocaleString('pt-BR')}
+</div>
+
+</div>
+
+<div style="
+background:#1e88e5;
+color:white;
+padding:20px;
+border-radius:15px;
+text-align:center;
+">
+
+<div style="font-size:14px;">
+SEPARADORES
+</div>
+
+<div style="
+font-size:34px;
+font-weight:700;
+">
+${totalSeparadores.toLocaleString('pt-BR')}
+</div>
+
+</div>
+
+<div style="
+background:#00c853;
+color:white;
+padding:20px;
+border-radius:15px;
+text-align:center;
+">
+
+<div style="font-size:14px;">
+EMPILHADORES
+</div>
+
+<div style="
+font-size:34px;
+font-weight:700;
+">
+${totalEmpilhadores.toLocaleString('pt-BR')}
+</div>
+
+</div>
+
+<div style="
+background:#ff9800;
+color:white;
+padding:20px;
+border-radius:15px;
+text-align:center;
+">
+
+<div style="font-size:14px;">
+MELHOR HORA
+</div>
+
+<div style="
+font-size:28px;
+font-weight:700;
+">
+${melhorHora[0]}
+</div>
+
+<div>
+${melhorHora[1].toLocaleString('pt-BR')}
+</div>
+
+</div>
+
+</div>
+
+<div style="
+font-size:34px;
+font-weight:700;
+color:#113d9a;
+text-align:center;
+margin-bottom:30px;
+">
+📊 PRODUÇÃO REAL POR HORA
+</div>
+`;
+
+lista.forEach(item => {
+
+    const hora = item[0];
+    const valor = item[1];
+
+    const perc =
+    (valor / maior) * 100;
+
+    html += `
+
+    <div style="
+    margin-bottom:18px;
+    ">
+
+        <div style="
+        display:flex;
+        justify-content:space-between;
+        font-size:16px;
+        font-weight:700;
+        margin-bottom:8px;
+        ">
+
+            <span>${hora}</span>
+
+            <span>
+            ${valor.toLocaleString('pt-BR')}
+            </span>
+
+        </div>
+
+        <div style="
+        width:100%;
+        height:34px;
+        background:#d3d3d3;
+        border-radius:12px;
+        overflow:hidden;
+        ">
+
+            <div style="
+            width:${perc}%;
+            height:100%;
+            background:linear-gradient(
+            90deg,
+            #113d9a,
+            #3367e2
+            );
+            color:white;
+            font-weight:bold;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            ">
+            ${valor}
+            </div>
+
+        </div>
+
+    </div>
+
+    `;
+
+});
+
+html += `</div>`;
+
+document.getElementById("conteudoModal")
+.innerHTML = html;
+
+modal.style.display = "block";
+
+document.getElementById("btnImagemEvolucao")
+.onclick = function(){
+
+    const area =
+    document.getElementById("areaEvolucao");
+
+    html2canvas(area,{
+        scale:2,
+        useCORS:true,
+        scrollX:0,
+        scrollY:0,
+        windowWidth: area.scrollWidth,
+        windowHeight: area.scrollHeight
+    }).then(canvas => {
+
+        const link =
+        document.createElement("a");
+
+        link.download =
+        "Evolucao_Operacao.png";
+
+        link.href =
+        canvas.toDataURL("image/png");
+
+        link.click();
+
+    });
+
+};
+
+};
+
+document.getElementById("menuTimeline")
+.onclick = () => {
+
+let html = `
+<div class="modal-titulo">
+📈 TIMELINE OPERACIONAL
+
+<button
+id="btnExportarTimeline"
+style="
+float:right;
+background:linear-gradient(135deg,#113d9a,#3367e2);
+color:white;
+border:none;
+padding:12px 22px;
+border-radius:10px;
+cursor:pointer;
+font-weight:700;
+font-size:14px;
+box-shadow:0 4px 12px rgba(0,0,0,.25);
+transition:.2s;
+">
+📊 Gerar Relatório
+</button>
+
+</div>
+
+<input
+id="filtroTimeline"
+type="text"
+placeholder="Pesquisar usuário, OT, material, picking..."
+style="
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:10px;
+font-size:14px;
+">
+
+<table id="tblTimeline">
+
+<tr>
+<th>Usuário</th>
+<th>Origem</th>
+<th>Picking</th>
+<th>OT</th>
+<th>Material</th>
+<th>Descrição</th>
+<th>Hora</th>
+<th>Produção</th>
+<th>Intervalo</th>
+<th>Status</th>
+</tr>
+`;
+
+eventosHoraAtual.forEach(item=>{
+
+let corStatus = "#2e7d32";
+
+if(item.obs === "VERIFICAR"){
+    corStatus = "#fb8c00";
+}
+else if(item.obs === "ATENÇÃO"){
+    corStatus = "#fbc02d";
+}
+else if(item.obs === "CRÍTICO"){
+    corStatus = "#e53935";
+}
+
+html += `
+<tr>
+<td>${item.usuario || ""}</td>
+<td>${item.origem || ""}</td>
+<td>${item.picking || ""}</td>
+<td>${item.ot || ""}</td>
+<td>${item.material || ""}</td>
+<td>${item.descricao || ""}</td>
+<td>${item.datahora || ""}</td>
+
+<td>${item.producao || ""}</td>
+
+<td style="
+font-weight:bold;
+color:${corStatus};
+">
+${item.intervaloAjustado || ""}
+</td>
+
+<td style="
+font-weight:bold;
+color:${corStatus};
+">
+${item.obs || ""}
+</td>
+
+</tr>
+`;
+
+});
+
+html += "</table>";
+
+document.getElementById("conteudoModal").innerHTML =
+html;
+
+modal.style.display = "block";
+
+document.getElementById("btnExportarTimeline").onclick = function(){
+
+let htmlExcel = `
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:x="urn:schemas-microsoft-com:office:excel"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+
+<meta charset="UTF-8">
+
+<style>
+
+table{
+border-collapse:collapse;
+width:100%;
+font-family:Calibri;
+font-size:11pt;
+}
+
+th{
+background:#000000;
+color:#FFFFFF;
+font-weight:bold;
+border:1px solid #000;
+padding:6px;
+text-align:center;
+}
+
+td{
+border:1px solid #BFBFBF;
+padding:4px;
+text-align:center;
+vertical-align:middle;
+}
+
+.normal{
+color:#2e7d32;
+font-weight:bold;
+}
+
+.verificar{
+color:#fb8c00;
+font-weight:bold;
+}
+
+.atencao{
+color:#fbc02d;
+font-weight:bold;
+}
+
+.critico{
+color:#e53935;
+font-weight:bold;
+}
+
+.titulo{
+background:#113d9a;
+color:white;
+font-size:16pt;
+font-weight:bold;
+text-align:center;
+padding:12px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<table>
+
+<tr>
+<td class="titulo" colspan="10">
+
+TIMELINE OPERACIONAL
+
+<br>
+
+<span style="
+font-size:11pt;
+font-weight:normal;
+">
+
+PERÍODO:
+${horaInicial}
+até
+${proximaHora}
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+EMISSÃO:
+${dataGeracao}
+
+</span>
+
+</td>
+</tr>
+
+<tr>
+<th>Usuário</th>
+<th>Origem</th>
+<th>Picking</th>
+<th>OT</th>
+<th>Material</th>
+<th>Descrição</th>
+<th>Hora</th>
+<th>Produção</th>
+<th>Intervalo</th>
+<th>Status</th>
+</tr>
+`;
+
+eventosHoraAtual.forEach(item=>{
+
+let classe = "normal";
+
+if(item.obs === "VERIFICAR"){
+    classe = "verificar";
+}
+else if(item.obs === "ATENÇÃO"){
+    classe = "atencao";
+}
+else if(item.obs === "CRÍTICO"){
+    classe = "critico";
+}
+
+htmlExcel += `
+<tr>
+
+<td style="mso-number-format:'\\@';">
+${item.usuario || ""}
+</td>
+
+<td>
+${item.origem || ""}
+</td>
+
+<td style="mso-number-format:'\\@';">
+${item.picking || ""}
+</td>
+
+<td style="
+mso-number-format:'0';
+">
+${item.ot || ""}
+</td>
+
+<td style="
+mso-number-format:'000000000000';
+">
+${item.material || ""}
+</td>
+
+<td>
+${item.descricao || ""}
+</td>
+
+<td>
+${item.datahora || ""}
+</td>
+
+<td>
+${item.producao || ""}
+</td>
+
+<td class="${classe}">
+${item.intervaloAjustado || ""}
+</td>
+
+<td class="${classe}">
+${item.obs || ""}
+</td>
+
+</tr>
+`;
+
+});
+
+htmlExcel += `
+</table>
+</body>
+</html>
+`;
+
+const blob = new Blob(
+    ['\ufeff' + htmlExcel],
+    {type:'application/vnd.ms-excel'}
+);
+
+const link =
+document.createElement("a");
+
+link.href =
+URL.createObjectURL(blob);
+
+link.download =
+"Timeline_Operacional.xls";
+
+document.body.appendChild(link);
+
+link.click();
+
+document.body.removeChild(link);
+
+};
+
+const filtro =
+document.getElementById("filtroTimeline");
+
+filtro.focus();
+
+filtro.onchange = function(){
+
+    const texto =
+    this.value.toUpperCase();
+
+    const linhas =
+    document.querySelectorAll("#tblTimeline tr");
+
+    for(let i = 1; i < linhas.length; i++){
+
+        const linha =
+        linhas[i].innerText.toUpperCase();
+
+        if(linha.includes(texto)){
+
+            linhas[i].style.display = "";
+
+        }else{
+
+            linhas[i].style.display = "none";
+
+        }
+
+    }
+
+};
+
+};
+
+</script>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+</body>
+</html>
