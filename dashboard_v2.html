@@ -922,18 +922,20 @@ ${somaOTS}
 </tr>
 `;
 
+const agora = new Date();
+
 const primeiraData =
 dados.tmpEventos[0].datahora.substring(0,10);
 
 document.getElementById("dataOperacao").innerHTML =
-'<span class="data-operacao"> Data Operação: ' +
+'<span class="data-operacao">📅 Data Operação: ' +
 primeiraData +
 '</span>';
 
 
 document.getElementById("ultimaAtualizacao").innerHTML =
 '<span class="ultima-atualizacao">🕒 Última Atualização: ' +
-dados.ultimaAtualizacao +
+agora.toLocaleTimeString("pt-BR") +
 '</span>';
 
 console.log(dados.tmpEventos[0]);
@@ -1126,7 +1128,9 @@ Number(ultimaHora.substring(11,13)) + 1
 ).padStart(2,"0") + ":00:00";
 
 const dataGeracao =
-dados.ultimaAtualizacao;
+agora.toLocaleDateString("pt-BR")
++ " " +
+agora.toLocaleTimeString("pt-BR");
 
 document.getElementById("menuHistorico")
 .onclick = () => {
