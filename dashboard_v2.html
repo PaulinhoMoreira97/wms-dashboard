@@ -328,6 +328,7 @@ color:#e53935;
 margin-left:20px;
 margin-right:10px;
 line-height:48px;
+margin-top:-2px;
 }
 
 .modal-titulo{
@@ -1142,7 +1143,32 @@ document.getElementById("menuHistorico")
 .onclick = () => {
 
 const hist = dados.histProducao || [];
-const semanaAtual = "SEMANA 1";
+
+console.log(
+[...new Set(
+hist.map(x => x.semana_operacional)
+)]
+);
+
+const semanas =
+[...new Set(
+hist.map(x => x.semana_operacional)
+)]
+.filter(x => x)
+.sort((a,b)=>{
+
+    const n1 =
+    Number(a.replace(/\D/g,""));
+
+    const n2 =
+    Number(b.replace(/\D/g,""));
+
+    return n1 - n2;
+
+});
+
+const semanaAtual =
+semanas[semanas.length - 1];
 
 const dias = {
 "05/10/2026":"SEGUNDA",
@@ -1241,11 +1267,91 @@ listaEmp.reduce(
 (a,b)=>a+b.total,
 0
 );
+
+function gerarHistorico(semanaSelecionada){
+
+const sep = {};
+const emp = {};
+
+hist.filter(item =>
+item.semana_operacional === semanaSelecionada
+).forEach(item=>{
+
+    const usuario = item.usuario;
+    const nome = item.nome;
+    const data = item.data_operacao;
+    const producao = Number(item.producao || 0);
+
+    const dia = dias[data] || data;
+
+    if(item.unidade === "CAIXAS"){
+
+        if(!sep[usuario]){
+
+            sep[usuario] = {
+                nome:nome,
+                SEGUNDA:0,
+                TERÇA:0,
+                QUARTA:0,
+                QUINTA:0,
+                SEXTA:0,
+                SÁBADO:0,
+                total:0
+            };
+
+        }
+
+        sep[usuario][dia] = producao;
+        sep[usuario].total += producao;
+
+    }else{
+
+        if(!emp[usuario]){
+
+            emp[usuario] = {
+                nome:nome,
+                SEGUNDA:0,
+                TERÇA:0,
+                QUARTA:0,
+                QUINTA:0,
+                SEXTA:0,
+                SÁBADO:0,
+                total:0
+            };
+
+        }
+
+        emp[usuario][dia] = producao;
+        emp[usuario].total += producao;
+
+    }
+
+});
+
+return {
+sep,
+emp
+};
+
+}
+
 let html = `
-
 <div class="modal-titulo">
-
 📚 HISTÓRICO DE PRODUÇÃO
+<select id="cmbSemana"
+style="
+float:right;
+padding:8px 12px;
+border-radius:8px;
+font-weight:bold;
+margin-right:60px;
+margin-left:15px;
+">
+
+${semanas.map(s =>
+`<option value="${s}">${s}</option>`
+).join("")}
+</select>
 
 <button
 id="btnImagemHistorico"
@@ -1487,6 +1593,19 @@ document.getElementById("conteudoModal")
 .innerHTML = html;
 
 modal.style.display = "block";
+
+document.getElementById("cmbSemana").value =
+semanaAtual;
+
+document.getElementById("cmbSemana").onchange =
+function(){
+
+    console.log(
+        "Semana:",
+        this.value
+    );
+
+};
 
 document.getElementById("btnImagemHistorico")
 .onclick = function(){
