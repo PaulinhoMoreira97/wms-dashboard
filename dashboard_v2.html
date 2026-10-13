@@ -1142,6 +1142,7 @@ document.getElementById("menuHistorico")
 .onclick = () => {
 
 const hist = dados.histProducao || [];
+const semanaAtual = "SEMANA 1";
 
 const dias = {
 "05/10/2026":"SEGUNDA",
@@ -1155,7 +1156,9 @@ const dias = {
 const sep = {};
 const emp = {};
 
-hist.forEach(item=>{
+hist.filter(item =>
+item.semana_operacional === semanaAtual
+).forEach(item=>{
 
     const usuario = item.usuario;
     const nome = item.nome;
@@ -1165,7 +1168,6 @@ console.log(
 item.usuario,
 "[" + item.data_operacao + "]"
 );
-``
 
     const producao = Number(item.producao || 0);
 
