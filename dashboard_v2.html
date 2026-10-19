@@ -202,6 +202,7 @@ box-shadow:0 15px 30px rgba(0,0,0,.15);
 font-size:14px;
 color:#666;
 margin-bottom:10px;
+white-space: nowrap; /* ← Isso impede de quebrar linha */
 }
 .value{
 font-size:38px;
@@ -350,6 +351,61 @@ padding:8px;
 padding:6px;
 border-bottom:1px solid #ddd;
 }
+
+/* ✅ ALERTAS INTELIGENTES */
+.alertas-container {
+  margin-top: 25px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0,0,0,.08);
+}
+.alertas-titulo {
+  font-size: 20px;
+  font-weight: 700;
+  color: #113d9a;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.alertas-colunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.coluna-alertas h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #113d9a;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #eee;
+}
+.alerta {
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  border-left: 5px solid;
+}
+.alerta-vermelho {
+  background: #ffebee;
+  border-color: #e53935;
+  color: #c62828;
+}
+.alerta-amarelo {
+  background: #fff8e1;
+  border-color: #fbc02d;
+  color: #f57f17;
+}
+.sem-alerta {
+  text-align: center;
+  padding: 20px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
 @media (max-width: 768px) {
   .header {
     padding: 20px 15px;
@@ -425,7 +481,7 @@ border-bottom:1px solid #ddd;
 
 <!-- Mensagem: aparece SOMENTE no celular, some no computador -->
 <div class="aviso-girar-celular">
- 📱 Gire o celular para ver melhor!
+ 📱 Gire o celular para visualizar melhor!
 </div>
 
 <style>
@@ -462,7 +518,10 @@ margin-bottom:15px;
 <div class="menu-item">📦 Produção</div>
 <div class="menu-item">🚜 Empilhadores</div>
 <div class="menu-item">👷 Separadores</div>
-<div class="menu-item">🏆 Ranking</div>
+
+<div class="menu-item" id="menuRanking">
+🏆 Ranking
+</div>
 <div class="menu-item" id="menuEvolucao">
 📈 Evolução por Hora
 </div>
@@ -577,6 +636,30 @@ GET - 0%
     <div id="barraGET" class="barra-get"></div>
 </div>
 </div>
+
+<!-- ✅ ALERTAS INTELIGENTES -->
+<div class="alertas-container">
+  <div class="alertas-titulo">
+    ⚠️ ALERTAS INTELIGENTES
+  </div>
+  <div class="alertas-colunas">
+    <!-- COLUNA ESQUERDA → SEPARADORES -->
+    <div class="coluna-alertas">
+      <h4>📦 SEPARADORES — Meta: 550 caixas</h4>
+      <div id="areaAlertasSeparadores">
+        <div class="sem-alerta">✅ Nenhum alerta</div>
+      </div>
+    </div>
+    <!-- COLUNA DIREITA → EMPILHADORES -->
+    <div class="coluna-alertas">
+      <h4>🚜 EMPILHADORES — Meta: 80 pallets</h4>
+      <div id="areaAlertasEmpilhadores">
+        <div class="sem-alerta">✅ Nenhum alerta</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>
 <div id="modal" class="modal">
 <div class="modal-content">
@@ -588,6 +671,7 @@ GET - 0%
 </div>
 </div>
 <script src="dados.js"></script>
+
 <script>
 const sidebar = document.getElementById("sidebar");
 const btn = document.getElementById("menuBtn");
@@ -787,15 +871,17 @@ document.getElementById("menuHistorico").onclick = () => {
     const totalSep = listaSep.reduce((a, b) => a + b.total, 0);
     const totalEmp = listaEmp.reduce((a, b) => a + b.total, 0);
     let html = `
-      <div class="modal-titulo">
-        📚 HISTÓRICO DE PRODUÇÃO
-        <select id="cmbSemana" style="float:right;padding:8px 12px;border-radius:8px;font-weight:bold;margin-right:20px;">
-          ${semanas.map(s => `<option value="${s}" ${s===semanaSelecionada?'selected':''}>${s}</option>`).join("")}
-        </select>
-        <button id="btnImagemHistorico" style="float:right;background:#00c853;color:white;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:bold;">
-          📸 Gerar Imagem
-        </button>
-      </div>
+<div class="modal-titulo" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+  <span>📚 HISTÓRICO DE PRODUÇÃO</span>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <button id="btnImagemHistorico" style="background:linear-gradient(135deg,#113d9a,#3367e2);color:white;border:none;padding:12px 22px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;">
+      📸 Gerar Imagem
+    </button>
+    <select id="cmbSemana" style="padding:12px 16px;border-radius:10px;font-weight:bold;border:1px solid #ccc;font-size:14px;">
+      ${semanas.map(s => `<option value="${s}" ${s===semanaSelecionada?'selected':''}>${s}</option>`).join("")}
+    </select>
+  </div>
+</div>
       <div id="areaHistorico">
         <h2 style="background:#000;color:#fff;padding:8px;text-align:center;margin-bottom:0;">
           PRODUÇÃO SEMANAL - SEPARADORES — ${semanaSelecionada}
@@ -824,9 +910,11 @@ document.getElementById("menuHistorico").onclick = () => {
         </tr>`;
     });
     html += `
-          <tr style="background:#000;color:#fff;font-weight:bold;">
-            <td colspan="8">TOTAL GERAL</td><td>${totalSep}</td><td>100%</td>
-          </tr>
+          <tr style="background:#000; color:#ffffff; font-weight:bold;">
+  <td colspan="8" style="color:#ffffff;">TOTAL GERAL</td>
+  <td style="color:#ffffff;">${totalSep}</td>
+  <td style="color:#ffffff;">100%</td>
+</tr>
         </table>
         <br><br>
         <h2 style="background:#000;color:#fff;padding:8px;text-align:center;margin-bottom:0;">
@@ -856,9 +944,11 @@ document.getElementById("menuHistorico").onclick = () => {
         </tr>`;
     });
     html += `
-          <tr style="background:#000;color:#fff;font-weight:bold;">
-            <td colspan="8">TOTAL GERAL</td><td>${totalEmp}</td><td>100%</td>
-          </tr>
+          <tr style="background:#000; color:#ffffff; font-weight:bold;">
+  <td colspan="8" style="color:#ffffff;">TOTAL GERAL</td>
+  <td style="color:#ffffff;">${totalEmp}</td>
+  <td style="color:#ffffff;">100%</td>
+</tr>
         </table>
       </div>`;
     document.getElementById("conteudoModal").innerHTML = html;
@@ -915,11 +1005,13 @@ const listaEmpilhadores = Object.entries(horasEmpilhadores).sort((a,b) => {
     return (hA >= 22 ? hA : hA + 24) - (hB >= 22 ? hB : hB + 24);
 });
 let html = `
-<button id="btnImagemEvolucao" style="float:right;background:#00c853;color:white;border:none;padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:bold;">
-📸 Gerar Imagem
-</button>
+<div class="modal-titulo" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
+  <span>📈 EVOLUÇÃO DA OPERAÇÃO</span>
+  <button id="btnImagemEvolucao" style="background:linear-gradient(135deg,#113d9a,#3367e2);color:white;border:none;padding:12px 22px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;">
+    📸 Gerar Imagem
+  </button>
+</div>
 <div id="areaEvolucao">
-<div class="modal-titulo">📈 EVOLUÇÃO DA OPERAÇÃO</div>
 <div style="background:white;padding:20px;">
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px;">
 <div style="background:#113d9a;color:#fff;padding:20px;border-radius:15px;text-align:center;">
@@ -1162,6 +1254,265 @@ eventosHoraAtual.forEach(item=>{
 html += "</table>";
 document.getElementById("conteudoModal").innerHTML = html;
 modal.style.display = "block";
+};
+
+// ==================================================
+// ⚠️ ALERTAS INTELIGENTES — VERSÃO CORRIGIDA
+// ==================================================
+function verificarAlertas() {
+  const areaSep = document.getElementById("areaAlertasSeparadores");
+  const areaEmp = document.getElementById("areaAlertasEmpilhadores");
+  
+  const META_SEPARADORES = 550;
+  const META_EMPILHADORES = 80;
+
+  // ==============================================
+  // SEPARADORES
+  // ==============================================
+  const alertasSep = [];
+  separadores.forEach(colab => {
+    const prod = Number(colab.producao || 0);
+    if (prod === 0) return;
+    
+    const perc = (prod / META_SEPARADORES) * 100;
+    const falta = META_SEPARADORES - prod;
+    
+    let tipo = null;
+    if (perc <= 50) {
+      tipo = { classe: "vermelho", etiqueta: "👤" };
+    } else if (perc <= 99.9) {
+      tipo = { classe: "amarelo", etiqueta: "👀" };
+    }
+    
+    if (tipo) {
+      alertasSep.push({
+        classe: tipo.classe,
+       texto: `${tipo.etiqueta} ${nomeCurto(colab.nome)} — ${perc.toFixed(0)}% da meta (${prod}/${META_SEPARADORES})${falta > 0 ? ` — falta ${falta} caixas` : ''}`
+      });
+    }
+  });
+
+  // ==============================================
+  // EMPILHADORES
+  // ==============================================
+  const alertasEmp = [];
+  empilhadores.forEach(colab => {
+    const prod = Number(colab.producao || 0);
+    if (prod === 0) return;
+    
+    const perc = (prod / META_EMPILHADORES) * 100;
+    const falta = META_EMPILHADORES - prod;
+    
+    let tipo = null;
+    if (perc <= 50) {
+      tipo = { classe: "vermelho", etiqueta: "👤" };
+    } else if (perc <= 75) {
+      tipo = { classe: "amarelo", etiqueta: "👀" };
+    }
+    
+    if (tipo) {
+      alertasEmp.push({
+        classe: tipo.classe,
+        texto: `${tipo.etiqueta} ${nomeCurto(colab.nome)} — ${perc.toFixed(0)}% da meta (${prod}/${META_EMPILHADORES})${falta > 0 ? ` — falta ${falta} pallets` : ''}`
+      });
+    }
+  });
+
+  // ==============================================
+  // EXIBIR
+  // ==============================================
+  areaSep.innerHTML = alertasSep.length === 0
+    ? `<div class="sem-alerta">✅ Nenhum alerta — todos acima de 75%</div>`
+    : alertasSep.map(a => `<div class="alerta alerta-${a.classe}">${a.texto}</div>`).join("");
+
+  areaEmp.innerHTML = alertasEmp.length === 0
+    ? `<div class="sem-alerta">✅ Nenhum alerta — todos acima de 75%</div>`
+    : alertasEmp.map(a => `<div class="alerta alerta-${a.classe}">${a.texto}</div>`).join("");
+}
+
+// ==================================================
+// 🔹 FUNÇÃO: Nome + Sobrenome
+// ==================================================
+function nomeCurto(nomeCompleto) {
+  if (!nomeCompleto) return "";
+
+  // Remove espaços extras
+  const partes = nomeCompleto.trim().split(/\s+/);
+
+  if (partes.length === 1) {
+    return partes[0];
+  }
+
+  if (partes.length === 2) {
+    return partes.join(" ");
+  }
+
+  // Mais de 2 partes: primeiro nome + último sobrenome
+  return `${partes[0]} ${partes[partes.length - 1]}`;
+}
+
+// Executar na carga e atualizar a cada 30 segundos
+verificarAlertas();
+setInterval(verificarAlertas, 30000);
+
+// ==================================================
+// 🏆 RANKING — ACUMULADO GERAL + BOTÃO DE IMAGEM
+// ==================================================
+document.getElementById("menuRanking").onclick = () => {
+  const hist = dados.histProducao || [];
+
+  // Separadores — SOMA TOTAL DE TODAS AS SEMANAS
+  const rankingSep = {};
+  hist.filter(item => item.unidade === "CAIXAS")
+      .forEach(item => {
+        const usuario = item.usuario;
+        const nome = item.nome;
+        const prod = Number(item.producao || 0);
+        if (!rankingSep[usuario]) {
+          rankingSep[usuario] = { nome, producao: 0 };
+        }
+        rankingSep[usuario].producao += prod;
+      });
+
+  // Empilhadores — SOMA TOTAL DE TODAS AS SEMANAS
+  const rankingEmp = {};
+  hist.filter(item => item.unidade === "PALLETS")
+      .forEach(item => {
+        const usuario = item.usuario;
+        const nome = item.nome;
+        const prod = Number(item.producao || 0);
+        if (!rankingEmp[usuario]) {
+          rankingEmp[usuario] = { nome, producao: 0 };
+        }
+        rankingEmp[usuario].producao += prod;
+      });
+
+  const listaSep = Object.values(rankingSep).sort((a, b) => b.producao - a.producao);
+  const listaEmp = Object.values(rankingEmp).sort((a, b) => b.producao - a.producao);
+
+  const totalGeralSep = listaSep.reduce((a, b) => a + b.producao, 0);
+  const totalGeralEmp = listaEmp.reduce((a, b) => a + b.producao, 0);
+
+  let html = `
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+  <h2 style="margin:0;font-size:22px;color:#113d9a;">🏆 RANKING GERAL — ACUMULADO DE TODAS AS SEMANAS</h2>
+  <button id="btnBaixarRanking" style="padding:10px 20px;background:#113d9a;color:white;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:8px;">
+    📸 Gerar Imagem
+  </button>
+</div>
+
+<div id="areaRankingImagem">
+<!-- 📦 SEPARADORES -->
+<h2 style="background:#113d9a;color:white;padding:12px;border-radius:10px 10px 0 0;margin:25px 0 0 0;text-align:center;font-size:20px;">
+📦 RANKING — SEPARADORES (TOTAL GERAL)
+</h2>
+<table style="width:100%;border-collapse:collapse;">
+  <tr style="background:#0d2f73;color:white;">
+    <th style="padding:12px;text-align:left;width:80px;">POSIÇÃO</th>
+    <th style="padding:12px;text-align:left;">COLABORADOR</th>
+    <th style="padding:12px;text-align:right;width:150px;">PRODUÇÃO TOTAL</th>
+    <th style="padding:12px;text-align:right;width:80px;">%</th>
+  </tr>`;
+
+  listaSep.forEach((item, idx) => {
+    const perc = totalGeralSep > 0 ? (item.producao / totalGeralSep) * 100 : 0;
+    let corFundo = "#ffffff";
+    if (idx === 0) corFundo = "#fff3cd";
+    else if (idx === 1) corFundo = "#e9ecef";
+    else if (idx === 2) corFundo = "#ffe8d6";
+
+    html += `
+  <tr style="background:${corFundo};border-bottom:1px solid #ddd;">
+    <td style="padding:10px;font-weight:bold;">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
+    <td style="padding:10px;">${item.nome}</td>
+    <td style="padding:10px;text-align:right;font-weight:bold;">${item.producao.toLocaleString('pt-BR')} caixas</td>
+    <td style="padding:10px;text-align:right;font-weight:bold;">${perc.toFixed(1)}%</td>
+  </tr>`;
+  });
+
+  html += `
+  <tr style="background:#113d9a;color:white;font-weight:bold;">
+    <td colspan="2" style="padding:12px;color:white;">TOTAL GERAL — TODAS AS SEMANAS</td>
+    <td style="padding:12px;text-align:right;color:white;">${totalGeralSep.toLocaleString('pt-BR')} caixas</td>
+    <td style="padding:12px;text-align:right;color:white;">100%</td>
+  </tr>
+</table>
+
+<!-- 🚜 EMPILHADORES -->
+<h2 style="background:#113d9a;color:white;padding:12px;border-radius:10px 10px 0 0;margin:25px 0 0 0;text-align:center;font-size:20px;">
+🚜 RANKING — EMPILHADORES (TOTAL GERAL)
+</h2>
+<table style="width:100%;border-collapse:collapse;">
+  <tr style="background:#0d2f73;color:white;">
+    <th style="padding:12px;text-align:left;width:80px;">POSIÇÃO</th>
+    <th style="padding:12px;text-align:left;">COLABORADOR</th>
+    <th style="padding:12px;text-align:right;width:150px;">PRODUÇÃO TOTAL</th>
+    <th style="padding:12px;text-align:right;width:80px;">%</th>
+  </tr>`;
+
+  listaEmp.forEach((item, idx) => {
+    const perc = totalGeralEmp > 0 ? (item.producao / totalGeralEmp) * 100 : 0;
+    let corFundo = "#ffffff";
+    if (idx === 0) corFundo = "#fff3cd";
+    else if (idx === 1) corFundo = "#e9ecef";
+    else if (idx === 2) corFundo = "#ffe8d6";
+
+    html += `
+  <tr style="background:${corFundo};border-bottom:1px solid #ddd;">
+    <td style="padding:10px;font-weight:bold;">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
+    <td style="padding:10px;">${item.nome}</td>
+    <td style="padding:10px;text-align:right;font-weight:bold;">${item.producao.toLocaleString('pt-BR')} pallets</td>
+    <td style="padding:10px;text-align:right;font-weight:bold;">${perc.toFixed(1)}%</td>
+  </tr>`;
+  });
+
+  html += `
+  <tr style="background:#113d9a;color:white;font-weight:bold;">
+    <td colspan="2" style="padding:12px;color:white;">TOTAL GERAL — TODAS AS SEMANAS</td>
+    <td style="padding:12px;text-align:right;color:white;">${totalGeralEmp.toLocaleString('pt-BR')} pallets</td>
+    <td style="padding:12px;text-align:right;color:white;">100%</td>
+  </tr>
+</table>
+</div>`;
+
+  document.getElementById("conteudoModal").innerHTML = html;
+  modal.style.display = "block";
+
+  // 📸 Função para baixar como imagem
+  setTimeout(() => {
+    const btn = document.getElementById("btnBaixarRanking");
+    const area = document.getElementById("areaRankingImagem");
+    
+    if (btn && area) {
+      btn.addEventListener("click", async () => {
+        // Carrega html2canvas se não tiver
+        if (!window.html2canvas) {
+          const script = document.createElement("script");
+          script.src = "https://html2canvas.hertzen.com/dist/html2canvas.min.js";
+          document.head.appendChild(script);
+          await new Promise(res => script.onload = res);
+        }
+        
+        btn.textContent = "⏳ Gerando...";
+        btn.disabled = true;
+        
+        const canvas = await html2canvas(area, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          logging: false
+        });
+        
+        const link = document.createElement("a");
+        link.download = "Ranking-Geral-Acumulado.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        
+        btn.textContent = "📸 Gerar / Baixar Imagem";
+        btn.disabled = false;
+      });
+    }
+  }, 100);
 };
 
 const modal = document.getElementById("modal");
