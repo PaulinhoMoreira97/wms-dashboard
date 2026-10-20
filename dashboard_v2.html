@@ -433,24 +433,32 @@ border-bottom:1px solid #ddd;
     padding: 10px;
   }
 
-  /* ✅ SÓ ISSO MUDA — igual na foto */
-  .cards {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important; /* ← 2 por linha */
-    gap: 10px;
+  /* ✅ CELULAR EM PÉ → 2 colunas */
+  @media (orientation: portrait) {
+    .cards {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px;
+    }
   }
-  .card {
-    min-width: 0 !important;
-    width: 100%;
-    padding: 20px 15px;
+
+  /* ✅ CELULAR DEITADO → 3 colunas */
+  @media (orientation: landscape) {
+    .cards {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 8px;
+    }
+    .card {
+      padding: 15px 8px;
+    }
+    .card h3 {
+      font-size: 13px;
+    }
+    .value {
+      font-size: 26px;
+    }
   }
-  .card h3 {
-    font-size: 14px;
-  }
-  .value {
-    font-size: 32px;
-  }
-  /* ✅ FIM — resto continua igual */
 
   .section-title {
     font-size: 16px !important;
@@ -645,14 +653,14 @@ GET - 0%
   <div class="alertas-colunas">
     <!-- COLUNA ESQUERDA → SEPARADORES -->
     <div class="coluna-alertas">
-      <h4>📦 SEPARADORES — Meta: 550 caixas</h4>
+      <h4> SEPARADORES — Meta: 550 caixas</h4>
       <div id="areaAlertasSeparadores">
         <div class="sem-alerta">✅ Nenhum alerta</div>
       </div>
     </div>
     <!-- COLUNA DIREITA → EMPILHADORES -->
     <div class="coluna-alertas">
-      <h4>🚜 EMPILHADORES — Meta: 80 pallets</h4>
+      <h4> EMPILHADORES — Meta: 80 pallets</h4>
       <div id="areaAlertasEmpilhadores">
         <div class="sem-alerta">✅ Nenhum alerta</div>
       </div>
@@ -1356,7 +1364,7 @@ verificarAlertas();
 setInterval(verificarAlertas, 30000);
 
 // ==================================================
-// 🏆 RANKING — ACUMULADO GERAL + BOTÃO DE IMAGEM
+// 🏆 RANKING — ACUMULADO GERAL + ALINHAMENTO DO CABEÇALHO COLABORADOR
 // ==================================================
 document.getElementById("menuRanking").onclick = () => {
   const hist = dados.histProducao || [];
@@ -1408,8 +1416,8 @@ document.getElementById("menuRanking").onclick = () => {
 </h2>
 <table style="width:100%;border-collapse:collapse;">
   <tr style="background:#0d2f73;color:white;">
-    <th style="padding:12px;text-align:left;width:80px;">POSIÇÃO</th>
-    <th style="padding:12px;text-align:left;">COLABORADOR</th>
+    <th style="padding:12px;text-align:center;width:80px;">POSIÇÃO</th>
+    <th style="padding:12px;text-align:center;width:auto;">COLABORADOR</th>
     <th style="padding:12px;text-align:right;width:150px;">PRODUÇÃO TOTAL</th>
     <th style="padding:12px;text-align:right;width:80px;">%</th>
   </tr>`;
@@ -1423,8 +1431,8 @@ document.getElementById("menuRanking").onclick = () => {
 
     html += `
   <tr style="background:${corFundo};border-bottom:1px solid #ddd;">
-    <td style="padding:10px;font-weight:bold;">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
-    <td style="padding:10px;">${item.nome}</td>
+    <td style="padding:10px;font-weight:bold;text-align:center;">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
+    <td style="padding:10px;text-align:center;">${item.nome}</td>
     <td style="padding:10px;text-align:right;font-weight:bold;">${item.producao.toLocaleString('pt-BR')} caixas</td>
     <td style="padding:10px;text-align:right;font-weight:bold;">${perc.toFixed(1)}%</td>
   </tr>`;
@@ -1432,7 +1440,7 @@ document.getElementById("menuRanking").onclick = () => {
 
   html += `
   <tr style="background:#113d9a;color:white;font-weight:bold;">
-    <td colspan="2" style="padding:12px;color:white;">TOTAL GERAL — TODAS AS SEMANAS</td>
+    <td colspan="2" style="padding:12px;color:white;text-align:center;">TOTAL GERAL — TODAS AS SEMANAS</td>
     <td style="padding:12px;text-align:right;color:white;">${totalGeralSep.toLocaleString('pt-BR')} caixas</td>
     <td style="padding:12px;text-align:right;color:white;">100%</td>
   </tr>
@@ -1444,8 +1452,8 @@ document.getElementById("menuRanking").onclick = () => {
 </h2>
 <table style="width:100%;border-collapse:collapse;">
   <tr style="background:#0d2f73;color:white;">
-    <th style="padding:12px;text-align:left;width:80px;">POSIÇÃO</th>
-    <th style="padding:12px;text-align:left;">COLABORADOR</th>
+    <th style="padding:12px;text-align:center;width:80px;">POSIÇÃO</th>
+    <th style="padding:12px;text-align:center;width:auto;">COLABORADOR</th>
     <th style="padding:12px;text-align:right;width:150px;">PRODUÇÃO TOTAL</th>
     <th style="padding:12px;text-align:right;width:80px;">%</th>
   </tr>`;
@@ -1459,8 +1467,8 @@ document.getElementById("menuRanking").onclick = () => {
 
     html += `
   <tr style="background:${corFundo};border-bottom:1px solid #ddd;">
-    <td style="padding:10px;font-weight:bold;">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
-    <td style="padding:10px;">${item.nome}</td>
+    <td style="padding:10px;font-weight:bold;text-align:center;">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
+    <td style="padding:10px;text-align:center;">${item.nome}</td>
     <td style="padding:10px;text-align:right;font-weight:bold;">${item.producao.toLocaleString('pt-BR')} pallets</td>
     <td style="padding:10px;text-align:right;font-weight:bold;">${perc.toFixed(1)}%</td>
   </tr>`;
@@ -1468,7 +1476,7 @@ document.getElementById("menuRanking").onclick = () => {
 
   html += `
   <tr style="background:#113d9a;color:white;font-weight:bold;">
-    <td colspan="2" style="padding:12px;color:white;">TOTAL GERAL — TODAS AS SEMANAS</td>
+    <td colspan="2" style="padding:12px;color:white;text-align:center;">TOTAL GERAL — TODAS AS SEMANAS</td>
     <td style="padding:12px;text-align:right;color:white;">${totalGeralEmp.toLocaleString('pt-BR')} pallets</td>
     <td style="padding:12px;text-align:right;color:white;">100%</td>
   </tr>
@@ -1485,7 +1493,6 @@ document.getElementById("menuRanking").onclick = () => {
     
     if (btn && area) {
       btn.addEventListener("click", async () => {
-        // Carrega html2canvas se não tiver
         if (!window.html2canvas) {
           const script = document.createElement("script");
           script.src = "https://html2canvas.hertzen.com/dist/html2canvas.min.js";
@@ -1508,7 +1515,7 @@ document.getElementById("menuRanking").onclick = () => {
         link.href = canvas.toDataURL("image/png");
         link.click();
         
-        btn.textContent = "📸 Gerar / Baixar Imagem";
+        btn.textContent = "📸 Gerar Imagem";
         btn.disabled = false;
       });
     }
