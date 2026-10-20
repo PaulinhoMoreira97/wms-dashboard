@@ -406,7 +406,10 @@ border-bottom:1px solid #ddd;
   font-weight: 600;
 }
 
-@media (max-width: 768px) {
+/* ==============================================
+   CELULAR EM PÉ → 2 COLUNAS
+   ============================================== */
+@media (max-width: 768px) and (orientation: portrait) {
   .header {
     padding: 20px 15px;
   }
@@ -433,31 +436,21 @@ border-bottom:1px solid #ddd;
     padding: 10px;
   }
 
-  /* ✅ CELULAR EM PÉ → 2 colunas */
-  @media (orientation: portrait) {
-    .cards {
-      display: grid !important;
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 10px;
-    }
+  .cards {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
   }
-
-  /* ✅ CELULAR DEITADO → 3 colunas */
-  @media (orientation: landscape) {
-    .cards {
-      display: grid !important;
-      grid-template-columns: repeat(3, 1fr) !important;
-      gap: 8px;
-    }
-    .card {
-      padding: 15px 8px;
-    }
-    .card h3 {
-      font-size: 13px;
-    }
-    .value {
-      font-size: 26px;
-    }
+  .card {
+    min-width: 0 !important;
+    width: 100%;
+    padding: 20px 15px;
+  }
+  .card h3 {
+    font-size: 14px;
+  }
+  .value {
+    font-size: 32px;
   }
 
   .section-title {
@@ -480,6 +473,76 @@ border-bottom:1px solid #ddd;
     margin: 0;
     border-radius: 0;
     padding: 10px;
+  }
+}
+
+/* ==============================================
+   CELULAR DEITADO → 3 COLUNAS
+   ============================================== */
+@media (max-width: 768px) and (orientation: landscape) {
+  .header {
+    padding: 15px 10px;
+  }
+  .header-conteudo {
+    gap: 10px;
+  }
+  .logo-cabecalho {
+    width: 60px;
+    height: 60px;
+  }
+  .header-textos h1 {
+    font-size: 18px;
+  }
+  .header-textos h2 {
+    font-size: 16px;
+  }
+  .linha-data,
+  .linha-atualizacao,
+  .linha-hora,
+  .linha-turno {
+    font-size: 12px;
+  }
+  .main {
+    padding: 8px;
+  }
+
+  .cards {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px;
+  }
+  .card {
+    min-width: 0 !important;
+    width: 100%;
+    padding: 15px 8px;
+  }
+  .card h3 {
+    font-size: 13px;
+  }
+  .value {
+    font-size: 26px;
+  }
+
+  .section-title {
+    font-size: 15px !important;
+    line-height: 1.1;
+  }
+  .sidebar {
+    width: 100%;
+  }
+  table {
+    font-size: 10px;
+  }
+  th, td {
+    font-size: 10px;
+    padding: 3px;
+  }
+  .modal-content {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
+    padding: 8px;
   }
 }
 
