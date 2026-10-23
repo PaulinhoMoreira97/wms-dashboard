@@ -708,6 +708,26 @@ GET - 0%
 </div>
 </div>
 
+<div class="section">
+<div class="section-title">
+PRODUÇÃO DOS PUXADORES
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Usuário</th>
+<th>Nome</th>
+<th>Produção</th>
+</tr>
+</thead>
+
+<tbody id="tblPuxadores">
+</tbody>
+
+</table>
+</div>
+
 <!-- ✅ ALERTAS INTELIGENTES -->
 <div class="alertas-container">
   <div class="alertas-titulo">
@@ -755,6 +775,7 @@ sidebar.classList.add("hidden");
 
 const separadores = dados.producao.separadores;
 const empilhadores = dados.producao.empilhadores;
+const puxadores = {};
 const totalSeparadores = separadores.reduce(
 (a,b)=>a+Number(b.producao||0), 0
 );
@@ -812,6 +833,62 @@ document.getElementById("barraWMS").style.width = percWMS + "%";
 document.getElementById("barraGET").style.width = percGET + "%";
 document.getElementById("barraWMS").innerText = Math.round(percWMS) + "%";
 document.getElementById("barraGET").innerText = Math.round(percGET) + "%";
+
+// ======================================
+// PRODUÇÃO DOS PUXADORES
+// ======================================
+
+dados.tmpEventos.forEach(item => {
+
+    if ((item.funcao || "").toUpperCase() === "PUXADORES") {
+
+        const usuario = item.usuario || "";
+
+        if (!puxadores[usuario]) {
+            puxadores[usuario] = {
+                nome: item.nome || "",
+                producao: 0
+            };
+        }
+
+        puxadores[usuario].producao += Number(item.producao || 0);
+
+    }
+
+});
+
+const listaPuxadores =
+Object.entries(puxadores)
+.sort((a,b)=>b[1].producao-a[1].producao);
+
+const tblPuxadores =
+document.getElementById("tblPuxadores");
+
+let totalPuxadores = 0;
+
+listaPuxadores.forEach(([usuario,dados]) => {
+
+    totalPuxadores += dados.producao;
+
+    tblPuxadores.innerHTML += `
+    <tr>
+        <td>${usuario}</td>
+        <td>${dados.nome}</td>
+        <td class="producao">${dados.producao}</td>
+    </tr>
+    `;
+});
+
+tblPuxadores.innerHTML += `
+<tr style="background:#113d9a;color:white;font-weight:bold;">
+<td colspan="2" style="color:white;">
+Total Geral
+</td>
+<td style="color:white;">
+${totalPuxadores}
+</td>
+</tr>
+`;
 
 const tbEmp = document.getElementById("tblEmpilhadores");
 empilhadores.forEach(l=>{
