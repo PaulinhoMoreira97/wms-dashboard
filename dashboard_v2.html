@@ -636,8 +636,8 @@ margin-bottom:15px;
 <div class="value" id="totalEmpilhadores">0</div>
 </div>
 <div class="card card-ots">
-<h3> OT's</h3>
-<div class="value" id="totalOTs">0</div>
+<h3> Produção Puxadores</h3>
+<div class="value" id="totalPuxadores">0</div>
 </div>
 <div class="card card-critico" id="cardZerados">
 <h3> Zerados</h3>
@@ -785,14 +785,11 @@ const totalEmpilhadores = empilhadores.reduce(
 const totalZerados = dados.base.reduce(
 (a,b)=>a+Number(b.zerados||0), 0
 );
-const totalOTs = separadores.reduce(
-(a,b)=>a+Number(b.ots||0), 0
-);
 
 document.getElementById("totalSeparadores").innerText = totalSeparadores.toLocaleString("pt-BR");
 document.getElementById("totalEmpilhadores").innerText = totalEmpilhadores.toLocaleString("pt-BR");
 document.getElementById("totalZerados").innerText = totalZerados.toLocaleString("pt-BR");
-document.getElementById("totalOTs").innerText = totalOTs.toLocaleString("pt-BR");
+
 
 const ultimoEvento = dados.tmpEventos[dados.tmpEventos.length - 1];
 const ultimaHora = ultimoEvento.datahora.substring(0,13);
@@ -889,6 +886,10 @@ ${totalPuxadores}
 </td>
 </tr>
 `;
+
+document.getElementById("totalPuxadores").innerText =
+totalPuxadores.toLocaleString("pt-BR");
+
 
 const tbEmp = document.getElementById("tblEmpilhadores");
 empilhadores.forEach(l=>{
