@@ -941,13 +941,13 @@ tbSep.innerHTML += `
 
 // Dados principais
 const primeiraData = dados.tmpEventos[0].datahora.substring(0,10);
-const ultimoDado = dados.tmpEventos[dados.tmpEventos.length - 1].datahora;
-const horaUltimaAtualizacao = ultimoDado.substring(11, 19);
 
 document.getElementById("dataOperacao").innerHTML =
   '📅 Data Operação: ' + primeiraData;
+
 document.getElementById("ultimaAtualizacao").innerHTML =
-  '🕒 Última Atualização: ' + horaUltimaAtualizacao;
+  '🕒 Última Atualização: ' +
+  (dados.ultimaAtualizacao || "--").split(" ")[1];
 
 // Hora Atual e Turno — atualiza sozinho!
 let agora;
