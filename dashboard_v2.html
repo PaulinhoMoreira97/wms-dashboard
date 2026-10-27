@@ -585,7 +585,10 @@ margin-bottom:15px;
 </div>
 📦 WMS Analytics
 </div>
-<div class="menu-item">📊 Dashboard</div>
+<div class="menu-item" id="menuAnalises">
+📈 Análises
+</div>
+
 <div class="menu-item">📦 Produção</div>
 <div class="menu-item">🚜 Empilhadores</div>
 <div class="menu-item">👷 Separadores</div>
@@ -1517,10 +1520,16 @@ document.getElementById("menuRanking").onclick = () => {
         const usuario = item.usuario;
         const nome = item.nome;
         const prod = Number(item.producao || 0);
-        if (!rankingSep[usuario]) {
-          rankingSep[usuario] = { nome, producao: 0 };
-        }
-        rankingSep[usuario].producao += prod;
+if (!rankingSep[usuario]) {
+    rankingSep[usuario] = {
+        nome,
+        producao: 0,
+        bipagem: 0
+    };
+}
+
+rankingSep[usuario].producao += prod;
+rankingSep[usuario].bipagem += Number(item.bipagem || 0);
       });
 
   // Empilhadores — SOMA TOTAL DE TODAS AS SEMANAS
@@ -1542,6 +1551,11 @@ document.getElementById("menuRanking").onclick = () => {
   const totalGeralSep = listaSep.reduce((a, b) => a + b.producao, 0);
   const totalGeralEmp = listaEmp.reduce((a, b) => a + b.producao, 0);
 
+const totalBipagens = listaSep.reduce(
+  (a,b) => a + Number(b.bipagem || 0),
+  0
+);
+
   let html = `
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
   <h2 style="margin:0;font-size:22px;color:#113d9a;">🏆 RANKING GERAL — ACUMULADO DE TODAS AS SEMANAS</h2>
@@ -1559,10 +1573,18 @@ document.getElementById("menuRanking").onclick = () => {
   <tr style="background:#0d2f73;color:white;">
     <th style="padding:12px;text-align:center;width:80px;">POSIÇÃO</th>
     <th style="padding:12px;text-align:center;width:auto;">COLABORADOR</th>
-    <th style="padding:12px;text-align:right;width:150px;">PRODUÇÃO TOTAL</th>
-    <th style="padding:12px;text-align:right;width:80px;">%</th>
-  </tr>`;
+    <th style="padding:12px;text-align:center;width:150px;">
+    PRODUÇÃO TOTAL
+</th>
 
+<th style="padding:12px;text-align:center;width:120px;">
+    BIPAGENS
+</th>
+
+<th style="padding:12px;text-align:center;width:80px;">
+    %
+</th>
+</tr>`;
   listaSep.forEach((item, idx) => {
     const perc = totalGeralSep > 0 ? (item.producao / totalGeralSep) * 100 : 0;
     let corFundo = "#ffffff";
@@ -1570,21 +1592,47 @@ document.getElementById("menuRanking").onclick = () => {
     else if (idx === 1) corFundo = "#e9ecef";
     else if (idx === 2) corFundo = "#ffe8d6";
 
-    html += `
-  <tr style="background:${corFundo};border-bottom:1px solid #ddd;">
-    <td style="padding:10px;font-weight:bold;text-align:center;">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
-    <td style="padding:10px;text-align:center;">${item.nome}</td>
-    <td style="padding:10px;text-align:right;font-weight:bold;">${item.producao.toLocaleString('pt-BR')} caixas</td>
-    <td style="padding:10px;text-align:right;font-weight:bold;">${perc.toFixed(1)}%</td>
-  </tr>`;
+html += `
+<tr style="background:${corFundo};border-bottom:1px solid #ddd;">
+  <td style="padding:10px;font-weight:bold;text-align:center;">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}</td>
+
+  <td style="padding:10px;text-align:center;">
+    ${item.nome}
+  </td>
+
+<td style="padding:10px;text-align:center;font-weight:bold;">
+  ${item.producao.toLocaleString('pt-BR')} caixas
+</td>
+
+<td style="padding:10px;text-align:center;font-weight:bold;color:#ff9800;">
+  ${item.bipagem.toLocaleString('pt-BR')}
+</td>
+
+  <td style="padding:10px;text-align:right;font-weight:bold;">
+    ${perc.toFixed(1)}%
+  </td>
+
+</tr>`;
   });
 
   html += `
-  <tr style="background:#113d9a;color:white;font-weight:bold;">
-    <td colspan="2" style="padding:12px;color:white;text-align:center;">TOTAL GERAL — TODAS AS SEMANAS</td>
-    <td style="padding:12px;text-align:right;color:white;">${totalGeralSep.toLocaleString('pt-BR')} caixas</td>
-    <td style="padding:12px;text-align:right;color:white;">100%</td>
-  </tr>
+<tr style="background:#113d9a;color:white;font-weight:bold;">
+  <td colspan="2" style="padding:12px;color:white;text-align:center;">
+    TOTAL GERAL — TODAS AS SEMANAS
+  </td>
+
+<td style="padding:12px;text-align:center;color:white;">
+  ${totalGeralSep.toLocaleString('pt-BR')} caixas
+</td>
+
+<td style="padding:12px;text-align:center;color:white;">
+  ${totalBipagens.toLocaleString('pt-BR')}
+</td>
+
+  <td style="padding:12px;text-align:right;color:white;">
+    100%
+  </td>
+</tr>
 </table>
 
 <!-- 🚜 EMPILHADORES -->
@@ -1595,8 +1643,13 @@ document.getElementById("menuRanking").onclick = () => {
   <tr style="background:#0d2f73;color:white;">
     <th style="padding:12px;text-align:center;width:80px;">POSIÇÃO</th>
     <th style="padding:12px;text-align:center;width:auto;">COLABORADOR</th>
-    <th style="padding:12px;text-align:right;width:150px;">PRODUÇÃO TOTAL</th>
-    <th style="padding:12px;text-align:right;width:80px;">%</th>
+    <th style="padding:12px;text-align:center;width:150px;">
+  PRODUÇÃO TOTAL
+</th>
+
+<th style="padding:12px;text-align:center;width:120px;">
+  BIPAGENS
+</th>
   </tr>`;
 
   listaEmp.forEach((item, idx) => {
@@ -1663,11 +1716,286 @@ document.getElementById("menuRanking").onclick = () => {
   }, 100);
 };
 
+document.getElementById("menuAnalises").onclick = () => {
+
+    const hist = dados.histProducao || [];
+
+    const colaboradores = [
+        ...new Set(
+            hist.map(x => x.nome)
+        )
+    ].sort();
+
+    let html = `
+    <div class="modal-titulo">
+        📈 ANÁLISES DE DESEMPENHO
+    </div>
+
+    <div style="
+        display:flex;
+        gap:15px;
+        align-items:center;
+        margin-bottom:25px;
+        flex-wrap:wrap;
+    ">
+
+        <label style="
+            font-weight:bold;
+            font-size:18px;
+        ">
+            Colaborador:
+        </label>
+
+        <select
+            id="cmbColaborador"
+            style="
+                padding:12px;
+                border-radius:10px;
+                min-width:400px;
+                font-size:16px;
+            ">
+            ${colaboradores.map(nome =>
+                `<option value="${nome}">
+                    ${nome}
+                </option>`
+            ).join("")}
+        </select>
+
+    </div>
+
+    <div id="areaAnalise"></div>
+    `;
+
+    document.getElementById("conteudoModal").innerHTML = html;
+
+    modal.style.display = "block";
+
+    carregarAnalise(
+        document.getElementById("cmbColaborador").value
+    );
+
+    document.getElementById("cmbColaborador")
+        .onchange = function(){
+
+        carregarAnalise(this.value);
+
+    };
+
+};
+
+function carregarAnalise(nomeSelecionado){
+
+    const hist = dados.histProducao || [];
+
+    const registros = hist
+        .filter(x => x.nome === nomeSelecionado)
+        .sort((a,b)=>{
+
+            const da = a.data_operacao.split("/");
+            const db = b.data_operacao.split("/");
+
+            return new Date(
+                da[2],
+                da[1]-1,
+                da[0]
+            ) - new Date(
+                db[2],
+                db[1]-1,
+                db[0]
+            );
+
+        });
+
+    if(registros.length === 0){
+        return;
+    }
+
+    const producoes =
+        registros.map(x =>
+            Number(x.producao || 0)
+        );
+
+    const maior =
+        Math.max(...producoes);
+
+    const menor =
+        Math.min(...producoes);
+
+    const media =
+        Math.round(
+            producoes.reduce((a,b)=>a+b,0)
+            / producoes.length
+        );
+
+    let html = `
+
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:15px;
+        margin-bottom:30px;
+    ">
+
+        <div style="
+            background:#113d9a;
+            color:white;
+            padding:20px;
+            border-radius:15px;
+            text-align:center;
+        ">
+            <div>MÉDIA</div>
+            <div style="font-size:32px;font-weight:bold;">
+                ${media}
+            </div>
+        </div>
+
+        <div style="
+            background:#00c853;
+            color:white;
+            padding:20px;
+            border-radius:15px;
+            text-align:center;
+        ">
+            <div>MELHOR DIA</div>
+            <div style="font-size:32px;font-weight:bold;">
+                ${maior}
+            </div>
+        </div>
+
+        <div style="
+            background:#e53935;
+            color:white;
+            padding:20px;
+            border-radius:15px;
+            text-align:center;
+        ">
+            <div>PIOR DIA</div>
+            <div style="font-size:32px;font-weight:bold;">
+                ${menor}
+            </div>
+        </div>
+
+        <div style="
+            background:#ff9800;
+            color:white;
+            padding:20px;
+            border-radius:15px;
+            text-align:center;
+        ">
+            <div>REGISTROS</div>
+            <div style="font-size:32px;font-weight:bold;">
+                ${registros.length}
+            </div>
+        </div>
+
+    </div>
+
+    <h2 style="
+        text-align:center;
+        color:#113d9a;
+        margin-bottom:25px;
+    ">
+        ${nomeSelecionado}
+    </h2>
+
+<div style="
+background:white;
+padding:20px;
+border-radius:15px;
+margin-bottom:30px;
+border:1px solid #d9d9d9;
+">
+
+    <h2 style="
+    text-align:center;
+    color:#113d9a;
+    margin-bottom:20px;
+    ">
+        📈 EVOLUÇÃO DA PRODUÇÃO
+    </h2>
+
+    <canvas
+        id="graficoProducao"
+        height="120">
+    </canvas>
+
+</div>
+
+    `;
+
+    registros.forEach(item => {
+
+        const prod =
+            Number(item.producao || 0);
+
+        const perc =
+            (prod / maior) * 100;
+
+        html += `
+
+        <div style="margin-bottom:18px;">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                font-weight:bold;
+                margin-bottom:6px;
+            ">
+
+                <span>
+                    ${item.data_operacao}
+                </span>
+
+                <span>
+                    ${prod}
+                </span>
+
+            </div>
+
+            <div style="
+                width:100%;
+                height:36px;
+                background:#d9d9d9;
+                border-radius:10px;
+                overflow:hidden;
+            ">
+
+                <div style="
+                    width:${perc}%;
+                    height:100%;
+                    background:linear-gradient(
+                        90deg,
+                        #113d9a,
+                        #3367e2
+                    );
+                    color:white;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-weight:bold;
+                ">
+                    ${prod}
+                </div>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById("areaAnalise").innerHTML =
+        html;
+
+}
+
 const modal = document.getElementById("modal");
 document.getElementById("fecharModal").onclick = () => {
 modal.style.display = "none";
 };
 </script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
 </body>
 </html>
