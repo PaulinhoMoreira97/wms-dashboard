@@ -1810,6 +1810,9 @@ function carregarAnalise(nomeSelecionado){
         return;
     }
 
+const FERIADOS =
+    dados.feriados || [];
+
 const EMPILHADORES = [
 
     "ARTHUR BRUNO PEREIRA DA SILVA",
@@ -1827,6 +1830,43 @@ const metaDiaria =
     EMPILHADORES.includes(nomeSelecionado)
     ? 80
     : 550;
+
+const ehEmpilhador =
+    EMPILHADORES.includes(nomeSelecionado);
+
+const wmsPorDia = {};
+const getPorDia = {};
+
+dados.tmpEventos.forEach(item => {
+
+    if ((item.nome || "") !== nomeSelecionado)
+        return;
+
+    const data = item.datahora
+        ? item.datahora.substring(0,10)
+        : "";
+
+    const origem =
+        (item.origem || "").toUpperCase();
+
+    const prod =
+        Number(item.producao || 0);
+
+    if (origem === "WMS") {
+
+        wmsPorDia[data] =
+            (wmsPorDia[data] || 0) + prod;
+
+    }
+
+    if (origem === "GET") {
+
+        getPorDia[data] =
+            (getPorDia[data] || 0) + prod;
+
+    }
+
+});
 
     const producoes =
         registros.map(x =>
