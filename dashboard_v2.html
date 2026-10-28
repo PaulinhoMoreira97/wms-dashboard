@@ -1988,6 +1988,169 @@ border:1px solid #d9d9d9;
     document.getElementById("areaAnalise").innerHTML =
         html;
 
+const ctx =
+document.getElementById("graficoProducao");
+
+new Chart(ctx, {
+
+    plugins: [ChartDataLabels],
+
+    type: "line",
+
+    data: {
+
+        labels: registros.map(x =>
+            x.data_operacao
+        ),
+
+datasets: [
+
+{
+
+    label: "Produção",
+
+    data: registros.map(x =>
+        Number(x.producao || 0)
+    ),
+
+    borderColor: "#113d9a",
+    backgroundColor: "rgba(17,61,154,0.15)",
+    borderWidth: 4,
+    tension: 0.3,
+    fill: true,
+
+    pointRadius: 8,
+    pointHoverRadius: 10,
+
+    pointBackgroundColor: "#ffffff",
+    pointBorderColor: "#113d9a",
+    pointBorderWidth: 4,
+
+    datalabels: {
+
+        display: true,
+
+        color: "#000000",
+
+        font: {
+            weight: "900",
+            size: 15
+        },
+
+        textStrokeColor: "#ffffff",
+        textStrokeWidth: 4,
+
+        anchor: "end",
+        align: "top",
+
+        formatter: function(value){
+            return value;
+        }
+    }
+
+},
+
+{
+    label: "Meta Diária",
+
+    data: registros.map(() => 550),
+
+    borderColor: "#e53935",
+
+    borderWidth: 3,
+
+    borderDash: [10,5],
+
+    pointRadius: 0,
+
+    fill: false,
+
+    tension: 0
+},
+
+{
+    label: "Bipagem",
+
+    data: registros.map(x =>
+        Number(x.bipagem || 0)
+    ),
+
+    borderColor: "#ff9800",
+
+    backgroundColor: "rgba(255,152,0,0.10)",
+
+    borderWidth: 3,
+
+    pointRadius: 6,
+
+    pointBackgroundColor: "#ffffff",
+
+    pointBorderColor: "#ff9800",
+
+    pointBorderWidth: 3,
+
+    fill: false,
+
+    tension: 0.3
+}
+
+]
+    },
+    options: {
+
+        responsive: true,
+
+plugins:{
+
+legend:{
+
+    display:true,
+
+    position:"bottom",
+
+    labels:{
+
+        usePointStyle:true,
+
+        pointStyle:"circle",
+
+        font:{
+            size:14,
+            weight:"bold"
+        }
+    }
+
+},
+
+
+    tooltip:{
+        displayColors:false,
+
+        callbacks:{
+
+            title:function(context){
+                return context[0].label;
+            },
+
+            label:function(context){
+                return "Produção: " + context.raw + " caixas";
+            }
+
+        }
+    }
+},
+        scales:{
+
+            y:{
+                beginAtZero:false
+            }
+
+        }
+
+    }
+
+});
+
 }
 
 const modal = document.getElementById("modal");
@@ -1996,6 +2159,7 @@ modal.style.display = "none";
 };
 </script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </body>
 </html>
