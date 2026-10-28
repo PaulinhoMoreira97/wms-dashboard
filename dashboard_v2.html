@@ -506,11 +506,25 @@ border-bottom:1px solid #ddd;
     padding: 8px;
   }
 
-  .cards {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 8px;
-  }
+@media (max-width: 768px) and (orientation: landscape) {
+
+    .cards{
+        grid-template-columns: repeat(3,1fr) !important;
+    }
+
+    #cardZerados{
+        grid-column: 1;
+    }
+
+    #cardAtencao{
+        grid-column: 2;
+    }
+
+    #cardCriticos{
+        grid-column: 3;
+    }
+
+}
   .card {
     min-width: 0 !important;
     width: 100%;
@@ -2045,13 +2059,6 @@ const totalBipagem =
 
     </div>
 
-    <h2 style="
-        text-align:center;
-        color:#113d9a;
-        margin-bottom:25px;
-    ">
-        ${nomeSelecionado}
-    </h2>
 
 <div style="
 background:#f5f5f5;
