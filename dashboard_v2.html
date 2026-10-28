@@ -1868,22 +1868,102 @@ dados.tmpEventos.forEach(item => {
 
 });
 
-    const producoes =
-        registros.map(x =>
-            Number(x.producao || 0)
-        );
+const producoes =
+    registros.map(x =>
+        Number(x.producao || 0)
+    );
 
-    const maior =
-        Math.max(...producoes);
+const maior =
+    Math.max(...producoes);
 
-    const menor =
-        Math.min(...producoes);
+const menor =
+    Math.min(...producoes);
 
-    const media =
-        Math.round(
-            producoes.reduce((a,b)=>a+b,0)
-            / producoes.length
-        );
+// =====================================
+// DIAS ÚTEIS DO MÊS ATÉ A DATA ATUAL
+// =====================================
+
+function strParaData(str){
+
+    const [d,m,a] = str.split("/");
+
+    return new Date(a,m-1,d);
+
+}
+
+let diasConsiderados = 0;
+
+const ultimaData =
+    registros[registros.length - 1].data_operacao;
+
+const [, mesRef, anoRef] =
+    ultimaData.split("/");
+
+let dataAtual =
+    new Date(
+        Number(anoRef),
+        Number(mesRef) - 1,
+        1
+    );
+
+const dataFinal =
+    strParaData(ultimaData);
+
+while(dataAtual <= dataFinal){
+
+    const dia =
+        String(dataAtual.getDate()).padStart(2,"0");
+
+    const mes =
+        String(dataAtual.getMonth()+1).padStart(2,"0");
+
+    const ano =
+        dataAtual.getFullYear();
+
+    const dataStr =
+        `${dia}/${mes}/${ano}`;
+
+    const diaSemana =
+        dataAtual.getDay();
+
+    const ehFeriado =
+        FERIADOS.includes(dataStr);
+
+    if(
+        diaSemana >= 1 &&
+        diaSemana <= 5 &&
+        !ehFeriado
+    ){
+        diasConsiderados++;
+    }
+
+    dataAtual.setDate(
+        dataAtual.getDate() + 1
+    );
+}
+
+const totalProducao =
+    producoes.reduce(
+        (a,b)=>a+b,
+        0
+    );
+
+console.log("Dias úteis:", diasConsiderados);
+
+const media =
+    diasConsiderados > 0
+    ? Math.round(
+        totalProducao /
+        diasConsiderados
+      )
+    : 0;
+
+const totalBipagem =
+    registros.reduce(
+        (a,b)=>a+Number(b.bipagem || 0),
+        0
+    );
+
 
     let html = `
 
@@ -1901,10 +1981,11 @@ dados.tmpEventos.forEach(item => {
             border-radius:15px;
             text-align:center;
         ">
-            <div>MÉDIA</div>
-            <div style="font-size:32px;font-weight:bold;">
-                ${media}
-            </div>
+<div>PRODUÇÃO TOTAL</div>
+
+<div style="font-size:32px;font-weight:bold;">
+    ${totalProducao.toLocaleString("pt-BR")}
+</div>
         </div>
 
         <div style="
@@ -1940,10 +2021,12 @@ dados.tmpEventos.forEach(item => {
             border-radius:15px;
             text-align:center;
         ">
-            <div>REGISTROS</div>
-            <div style="font-size:32px;font-weight:bold;">
-                ${registros.length}
-            </div>
+<div>BIPAGEM TOTAL</div>
+
+<div style="font-size:32px;font-weight:bold;">
+    ${totalBipagem.toLocaleString("pt-BR")}
+</div>
+
         </div>
 
     </div>
