@@ -1893,11 +1893,13 @@ function strParaData(str){
 
 let diasConsiderados = 0;
 
-const ultimaData =
-    registros[registros.length - 1].data_operacao;
+const dataOperacao =
+    document.getElementById("dataOperacao")
+        .innerText
+        .replace("📅 Data Operação: ","");
 
 const [, mesRef, anoRef] =
-    ultimaData.split("/");
+    dataOperacao.split("/");
 
 let dataAtual =
     new Date(
@@ -1907,7 +1909,7 @@ let dataAtual =
     );
 
 const dataFinal =
-    strParaData(ultimaData);
+    strParaData(dataOperacao);
 
 while(dataAtual <= dataFinal){
 
@@ -1948,8 +1950,6 @@ const totalProducao =
         0
     );
 
-console.log("Dias úteis:", diasConsiderados);
-
 const media =
     diasConsiderados > 0
     ? Math.round(
@@ -1969,7 +1969,7 @@ const totalBipagem =
 
     <div style="
         display:grid;
-        grid-template-columns:repeat(4,1fr);
+        grid-template-columns:repeat(5,1fr);
         gap:15px;
         margin-bottom:30px;
     ">
@@ -1987,6 +1987,20 @@ const totalBipagem =
     ${totalProducao.toLocaleString("pt-BR")}
 </div>
         </div>
+
+
+<div style="
+    background:#455a64;
+    color:white;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+">
+    <div>MÉDIA MENSAL</div>
+    <div style="font-size:32px;font-weight:bold;">
+        ${media}
+    </div>
+</div>
 
         <div style="
             background:#00c853;
