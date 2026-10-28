@@ -1988,12 +1988,45 @@ border:1px solid #d9d9d9;
     document.getElementById("areaAnalise").innerHTML =
         html;
 
+
+
 const ctx =
 document.getElementById("graficoProducao");
 
+// FUNDO DO GRÁFICO
+const chartAreaBackground = {
+
+    id: 'chartAreaBackground',
+
+    beforeDraw(chart) {
+
+        const {
+            ctx,
+            chartArea
+        } = chart;
+
+        ctx.save();
+
+        ctx.fillStyle = '#f2f2f2';
+
+        ctx.fillRect(
+            chartArea.left,
+            chartArea.top,
+            chartArea.right - chartArea.left,
+            chartArea.bottom - chartArea.top
+        );
+
+        ctx.restore();
+    }
+};
+
+
 new Chart(ctx, {
 
-    plugins: [ChartDataLabels],
+    plugins: [
+    ChartDataLabels,
+    chartAreaBackground
+],
 
     type: "line",
 
@@ -2014,7 +2047,7 @@ datasets: [
     ),
 
     borderColor: "#113d9a",
-    backgroundColor: "rgba(17,61,154,0.15)",
+    backgroundColor: "rgba(180,180,180,0.15)",
     borderWidth: 4,
     tension: 0.3,
     fill: true,
@@ -2065,7 +2098,11 @@ datasets: [
 
     fill: false,
 
-    tension: 0
+    tension: 0,
+
+    datalabels: {
+        display: false
+    }
 },
 
 {
@@ -2081,7 +2118,7 @@ datasets: [
 
     borderWidth: 3,
 
-    pointRadius: 6,
+    pointRadius: 8,
 
     pointBackgroundColor: "#ffffff",
 
@@ -2091,7 +2128,31 @@ datasets: [
 
     fill: false,
 
-    tension: 0.3
+    tension: 0.3,
+
+    datalabels: {
+
+        display: true,
+
+        color: "#000000",
+
+        font: {
+            weight: "900",
+            size: 15
+        },
+
+        textStrokeColor: "#ffffff",
+
+        textStrokeWidth: 4,
+
+        anchor: "end",
+
+        align: "top",
+
+        formatter: function(value){
+            return value;
+        }
+    }
 }
 
 ]
@@ -2139,13 +2200,17 @@ legend:{
         }
     }
 },
-        scales:{
+scales: {
 
-            y:{
-                beginAtZero:false
-            }
+    y: {
 
-        }
+        beginAtZero: false,
+
+        suggestedMax: maior + 150
+
+    }
+
+}
 
     }
 
