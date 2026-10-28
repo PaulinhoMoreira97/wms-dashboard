@@ -506,27 +506,21 @@ border-bottom:1px solid #ddd;
     padding: 8px;
   }
 
-@media (max-width: 768px) and (orientation: landscape) {
+/* ==============================================
+   CELULAR DEITADO
+   ============================================== */
+@media (orientation: landscape) {
 
-.cards {
+  .cards{
     display:grid !important;
     grid-template-columns:repeat(2,1fr) !important;
-    gap:10px;
-}
+    gap:10px !important;
+  }
 
-}
-
-    #cardZerados{
-        grid-column: 1;
-    }
-
-    #cardAtencao{
-        grid-column: 2;
-    }
-
-    #cardCriticos{
-        grid-column: 3;
-    }
+  .card{
+    width:100% !important;
+    min-width:0 !important;
+  }
 
 }
   .card {
