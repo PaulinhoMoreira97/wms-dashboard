@@ -302,25 +302,29 @@ background:#f3f7ff;
 tbody tr:nth-child(even){
 background:#f7f9fc;
 }
-.modal{
-display:none;
-position:fixed;
-left:0;
-top:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.65);
-z-index:9999;
+.modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75); /* Fundo mais escuro */
+  z-index: 9999;
+  padding: 15px; /* Espaçamento nas bordas */
 }
-.modal-content{
-background:#fff;
-width:95%;
-height:90%;
-margin:2% auto;
-border-radius:15px;
-padding:20px;
-overflow:auto;
+
+.modal-content {
+  background: #fff;
+  width: 98%; /* Quase toda a largura */
+  height: 96vh; /* Quase toda a altura */
+  margin: 0 auto;
+  border-radius: 16px;
+  padding: 30px;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
+
 .fechar{
 float:right;
 font-size:32px;
@@ -457,9 +461,12 @@ border-bottom:1px solid #ddd;
     font-size: 16px !important;
     line-height: 1.1;
   }
+  
+  /* ✅ Mantém a largura fixa também no celular */
   .sidebar {
-    width: 100%;
+    width: 320px; /* ← Mantém o menu estreito em todos os tamanhos de tela */
   }
+  
   table {
     font-size: 11px;
   }
@@ -506,34 +513,29 @@ border-bottom:1px solid #ddd;
     padding: 8px;
   }
 
-@media (orientation: landscape) {
-
-.cards{
-    display:grid !important;
-    grid-template-columns:repeat(2,1fr) !important;
-    gap:10px !important;
-}
-
-.card{
-    width:100% !important;
-    min-width:0 !important;
-}
-
-}
-
-  #cardZerados{
-    grid-column:1;
+  .cards {
+    display: grid !important;
+    grid-template-columns: repeat(2,1fr) !important;
+    gap: 10px !important;
   }
 
-  #cardAtencao{
-    grid-column:2;
+  .card {
+    width: 100% !important;
+    min-width: 0 !important;
   }
 
-  #cardCriticos{
-    grid-column:span 2;
+  #cardZerados {
+    grid-column: 1;
   }
 
-}
+  #cardAtencao {
+    grid-column: 2;
+  }
+
+  #cardCriticos {
+    grid-column: span 2;
+  }
+
   .card {
     min-width: 0 !important;
     width: 100%;
@@ -550,9 +552,12 @@ border-bottom:1px solid #ddd;
     font-size: 15px !important;
     line-height: 1.1;
   }
+  
+  /* ✅ Mantém a largura fixa também no celular deitado */
   .sidebar {
-    width: 100%;
+    width: 320px; /* ← Mesma largura fixa */
   }
+  
   table {
     font-size: 10px;
   }
@@ -2131,201 +2136,160 @@ const chartAreaBackground = {
 
 
 new Chart(ctx, {
-
-    plugins: [
+  plugins: [
     ChartDataLabels,
     chartAreaBackground
-],
+  ],
 
-    type: "line",
+  type: "line",
 
-    data: {
-
-        labels: registros.map(x =>
-            x.data_operacao
-        ),
-
+  data: {
+    labels: registros.map(x => x.data_operacao),
 datasets: [
-
-{
-
+  {
     label: "Produção",
-
-    data: registros.map(x =>
-        Number(x.producao || 0)
-    ),
-
+    data: registros.map(x => Number(x.producao || 0)),
     borderColor: "#113d9a",
-    backgroundColor: "rgba(180,180,180,0.15)",
+    backgroundColor: "rgba(17, 61, 154, 0.15)",
     borderWidth: 4,
     tension: 0.3,
     fill: true,
-
     pointRadius: 8,
     pointHoverRadius: 10,
-
     pointBackgroundColor: "#ffffff",
     pointBorderColor: "#113d9a",
     pointBorderWidth: 4,
-
     datalabels: {
-
-        display: true,
-
-        color: "#000000",
-
-        font: {
-            weight: "900",
-            size: 15
-        },
-
-        textStrokeColor: "#ffffff",
-        textStrokeWidth: 4,
-
-        anchor: "end",
-        align: "top",
-
-        formatter: function(value){
-            return value;
-        }
+      display: true,
+      color: "#000000",
+      font: { weight: "900", size: 15 },
+      textStrokeColor: "#ffffff",
+      textStrokeWidth: 4,
+      anchor: "end",
+      align: "top"
     }
-
-},
-
-{
+  },
+  {
     label: "Meta Diária",
-
     data: registros.map(() => metaDiaria),
-
     borderColor: "#e53935",
-
     borderWidth: 3,
-
-    borderDash: [10,5],
-
+    borderDash: [10, 5],
     pointRadius: 0,
-
     fill: false,
-
     tension: 0,
-
-    datalabels: {
-        display: false
-    }
-},
-
-{
+    datalabels: { display: false }
+  },
+  {
     label: "Bipagem",
-
-    data: registros.map(x =>
-        Number(x.bipagem || 0)
-    ),
-
+    data: registros.map(x => Number(x.bipagem || 0)),
     borderColor: "#ff9800",
-
-    backgroundColor: "rgba(255,152,0,0.10)",
-
+    backgroundColor: "rgba(255, 152, 0, 0.10)",
     borderWidth: 3,
-
     pointRadius: 8,
-
     pointBackgroundColor: "#ffffff",
-
     pointBorderColor: "#ff9800",
-
     pointBorderWidth: 3,
-
     fill: false,
-
     tension: 0.3,
-
     datalabels: {
-
-        display: true,
-
-        color: "#000000",
-
-        font: {
-            weight: "900",
-            size: 15
-        },
-
-        textStrokeColor: "#ffffff",
-
-        textStrokeWidth: 4,
-
-        anchor: "end",
-
-        align: "top",
-
-        formatter: function(value){
-            return value;
-        }
+      display: true,
+      color: "#000000",
+      font: { weight: "900", size: 15 },
+      textStrokeColor: "#ffffff",
+      textStrokeWidth: 4,
+      anchor: "end",
+      align: "top"
     }
-}
-
+  }
 ]
+  },
+
+  options: {
+    responsive: true,
+
+   plugins: {
+ tooltip: {
+  backgroundColor: "#1a1a1a",
+  titleColor: "#ffffff",
+  padding: 12,
+  cornerRadius: 8,
+  displayColors: true, // ✅ Mostra a bolinha de cor
+
+  beforeShow: function() {
+    document.querySelectorAll(".custom-tooltip").forEach(el => el.remove());
+    return true;
+  },
+
+  callbacks: {
+    title: function(context) {
+      return context[0]?.label || "";
     },
-    options: {
-
-        responsive: true,
-
-plugins:{
-
-legend:{
-
-    display:true,
-
-    position:"bottom",
-
-    labels:{
-
-        usePointStyle:true,
-
-        pointStyle:"circle",
-
-        font:{
-            size:14,
-            weight:"bold"
+    label: function(context) {
+      const nome = context.dataset.label;
+      const valor = context.raw;
+      
+      // 🟢 Para Produção: mostra diferença da meta
+      if (nome === "Produção") {
+        const meta = ehEmpilhador ? 80 : 550;
+        const dif = valor - meta;
+        if (dif > 0) {
+          return `Produção: ${valor} ↑ +${dif} acima da meta`;
+        } else if (dif < 0) {
+          return `Produção: ${valor} ↓ ${Math.abs(dif)} abaixo da meta`;
+        } else {
+          return `Produção: ${valor} = Meta batida!`;
         }
+      }
+      
+      // 🟠 Para Bipagem: mostra só o valor, SEM comparação com meta
+      if (nome === "Bipagem") {
+        return `Bipagem: ${valor}`;
+      }
+      
+      return `${nome}: ${valor}`;
+    },
+    labelColor: function(context) {
+      const nome = context.dataset.label;
+      const valor = context.raw;
+      
+      // Cor da Produção: verde se acima, vermelho se abaixo
+      if (nome === "Produção") {
+        const meta = ehEmpilhador ? 80 : 550;
+        const dif = valor - meta;
+        if (dif > 0) return { textColor: "#00f060" }; // ✅ Verde
+        if (dif < 0) return { textColor: "#ff5050" }; // ✅ Vermelho
+        return { textColor: "#ffffff" };
+      }
+      
+      // Cor fixa para Bipagem: laranja
+      if (nome === "Bipagem") {
+        return { textColor: "#ff9800" }; // ✅ Laranja
+      }
+      
+      return { textColor: "#ffffff" };
     }
-
+  }
 },
 
-
-label:function(context){
-
-    if(context.dataset.label === "Produção"){
-        return "Produção: " + context.raw + " caixas";
+  legend: {
+    display: true,
+    position: "bottom",
+    labels: {
+      usePointStyle: true,
+      pointStyle: "circle",
+      font: { size: 14, weight: "bold" }
     }
-
-    if(context.dataset.label === "Bipagem"){
-        return "Bipagem: " + context.raw;
-    }
-
-    if(context.dataset.label === "Meta Diária"){
-        return "Meta Diária: " + context.raw;
-    }
-
-    return context.dataset.label + ": " + context.raw;
-
-}
-
+  }
 },
-scales: {
 
-    y: {
-
+    scales: {
+      y: {
         beginAtZero: false,
-
         suggestedMax: Math.max(maior, metaDiaria) + 100
-
+      }
     }
-
-}
-
-    }
-
+  }
 });
 
 }
