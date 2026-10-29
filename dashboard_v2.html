@@ -1150,7 +1150,11 @@ document.getElementById("menuHistorico").onclick = () => {
 
 document.getElementById("menuEvolucao").onclick = () => {
 const horas = {}, horasSeparadores = {}, horasEmpilhadores = {};
-let totalGeral = 0, totalSeparadores = 0, totalEmpilhadores = 0;
+let totalGeral = 0,
+    totalSeparadores = 0,
+    totalEmpilhadores = 0,
+    totalPuxadores = 0;
+
 dados.tmpEventos.forEach(item => {
     if(!item.datahora) return;
     const hora = item.datahora.substring(11,13) + ":00";
@@ -1158,13 +1162,29 @@ dados.tmpEventos.forEach(item => {
     const funcao = (item.funcao || "").toUpperCase();
     horas[hora] = (horas[hora] || 0) + producao;
     totalGeral += producao;
-    if(funcao.includes("EMPILH")){
-        horasEmpilhadores[hora] = (horasEmpilhadores[hora] || 0) + producao;
-        totalEmpilhadores += producao;
-    }else{
-        horasSeparadores[hora] = (horasSeparadores[hora] || 0) + producao;
-        totalSeparadores += producao;
-    }
+
+if(funcao.includes("EMPILH")){
+
+    horasEmpilhadores[hora] =
+        (horasEmpilhadores[hora] || 0) + producao;
+
+    totalEmpilhadores += producao;
+
+}
+else if(funcao.includes("PUXADOR")){
+
+    totalPuxadores += producao;
+
+}
+else{
+
+    horasSeparadores[hora] =
+        (horasSeparadores[hora] || 0) + producao;
+
+    totalSeparadores += producao;
+
+}
+
 });
 const lista = Object.entries(horas).sort((a,b) => {
     const hA = Number(a[0].substring(0,2));
@@ -1193,7 +1213,7 @@ let html = `
 </div>
 <div id="areaEvolucao">
 <div style="background:white;padding:20px;">
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px;">
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:15px;margin-bottom:25px;">
 <div style="background:#113d9a;color:#fff;padding:20px;border-radius:15px;text-align:center;">
 <div style="font-size:14px;">PRODUÇÃO TOTAL</div>
 <div style="font-size:34px;font-weight:700;">${totalGeral.toLocaleString('pt-BR')}</div>
@@ -1206,12 +1226,21 @@ let html = `
 <div style="font-size:14px;">EMPILHADORES</div>
 <div style="font-size:34px;font-weight:700;">${totalEmpilhadores.toLocaleString('pt-BR')}</div>
 </div>
+<div style="background:#9c27b0;color:white;padding:20px;border-radius:15px;text-align:center;">
+<div style="font-size:14px;">PUXADORES</div>
+<div style="font-size:34px;font-weight:700;">
+${totalPuxadores.toLocaleString('pt-BR')}
+</div>
+</div>
+
 <div style="background:#ff9800;color:white;padding:20px;border-radius:15px;text-align:center;">
 <div style="font-size:14px;">MELHOR HORA</div>
 <div style="font-size:28px;font-weight:700;">${melhorHora[0]}</div>
 <div>${melhorHora[1].toLocaleString('pt-BR')}</div>
 </div>
+
 </div>
+
 <div style="font-size:34px;font-weight:700;color:#113d9a;text-align:center;margin-bottom:30px;">
 📊 PRODUÇÃO REAL POR HORA
 </div>`;
@@ -2234,9 +2263,9 @@ datasets: [
         const meta = ehEmpilhador ? 80 : 550;
         const dif = valor - meta;
         if (dif > 0) {
-          return `Produção: ${valor} ↑ +${dif} acima da meta`;
+         return `Produção: ${valor} 🟢▲ +${dif} acima da meta`;
         } else if (dif < 0) {
-          return `Produção: ${valor} ↓ ${Math.abs(dif)} abaixo da meta`;
+          return `Produção: ${valor} 🔴▼ ${Math.abs(dif)} abaixo da meta`;
         } else {
           return `Produção: ${valor} = Meta batida!`;
         }
