@@ -1201,6 +1201,7 @@ const listaEmpilhadores = Object.entries(horasEmpilhadores).sort((a,b) => {
     return (hA >= 22 ? hA : hA + 24) - (hB >= 22 ? hB : hB + 24);
 });
 let html = `
+
 <div class="modal-titulo" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
   <span>📈 EVOLUÇÃO DA OPERAÇÃO</span>
   <button id="btnImagemEvolucao" style="background:linear-gradient(135deg,#113d9a,#3367e2);color:white;border:none;padding:12px 22px;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;">
@@ -1779,18 +1780,52 @@ document.getElementById("menuAnalises").onclick = () => {
         )
     ].sort();
 
-    let html = `
-    <div class="modal-titulo">
-        📈 ANÁLISES DE DESEMPENHO
-    </div>
+let html = `
+<div id="areaAnaliseImagem" style="
+padding:40px;
+background:#ffffff;
+border-radius:20px;
+">
 
-    <div style="
-        display:flex;
-        gap:15px;
-        align-items:center;
-        margin-bottom:25px;
-        flex-wrap:wrap;
-    ">
+<div class="modal-titulo" style="
+display:flex;
+align-items:flex-start;
+justify-content:space-between;
+gap:12px;
+margin-top:-20px;
+">
+
+
+    <span>📈 ANÁLISES DE DESEMPENHO</span>
+
+<button id="btnImagemAnalise"
+style="
+background:linear-gradient(135deg,#113d9a,#3367e2);
+color:white;
+border:none;
+padding:12px 22px;
+border-radius:10px;
+cursor:pointer;
+font-weight:700;
+font-size:14px;
+position:absolute;
+top:40px;
+right:140px;
+
+">
+
+📸 Gerar Imagem
+</button>
+
+</div>
+
+<div style="
+display:flex;
+gap:15px;
+align-items:center;
+margin-bottom:25px;
+flex-wrap:wrap;
+">
 
         <label style="
             font-weight:bold;
@@ -1816,10 +1851,54 @@ document.getElementById("menuAnalises").onclick = () => {
 
     </div>
 
-    <div id="areaAnalise"></div>
-    `;
+    <div id="areaAnaliseImagem">
+
+<div style="
+display:flex;
+gap:15px;
+align-items:center;
+margin-bottom:25px;
+flex-wrap:wrap;
+">
+
+</div>
+
+<div id="areaAnalise"></div>
+
+</div>
+</div>
+`;
 
     document.getElementById("conteudoModal").innerHTML = html;
+
+document.getElementById("btnImagemAnalise").onclick = function(){
+
+    const botao = this;
+
+    botao.style.display = "none";
+
+    html2canvas(
+        document.getElementById("areaAnaliseImagem"),
+        {
+            scale:2,
+            useCORS:true,
+            backgroundColor:"#ffffff"
+        }
+    ).then(canvas => {
+
+        botao.style.display = "block";
+
+        const link = document.createElement("a");
+
+        link.download = "Analise_Desempenho.png";
+
+        link.href = canvas.toDataURL("image/png");
+
+        link.click();
+
+    });
+
+};
 
     modal.style.display = "block";
 
