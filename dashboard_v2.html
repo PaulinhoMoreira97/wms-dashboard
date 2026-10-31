@@ -1790,8 +1790,8 @@ border-radius:20px;
 <div class="modal-titulo" style="
 display:flex;
 align-items:center;
-justify-content:space-between;
-gap:12px;
+justify-content:flex-start;
+gap:15px;
 margin-top:-20px;
 ">
 
@@ -1810,6 +1810,22 @@ font-size:14px;
 margin-top:-38px;
 ">
 📸 Gerar Imagem
+</button>
+
+<button id="btnPdfAnalise"
+style="
+background:linear-gradient(135deg,#00a651,#00c853);
+color:white;
+border:none;
+padding:12px 22px;
+border-radius:10px;
+cursor:pointer;
+font-weight:700;
+font-size:14px;
+margin-top:-38px;
+margin-left:10px;
+">
+📚 Gerar PDF Geral
 </button>
 
 </div>
@@ -1868,9 +1884,9 @@ flex-wrap:wrap;
 
 document.getElementById("btnImagemAnalise").onclick = function(){
 
-    const botao = this;
-
-    botao.style.display = "none";
+    document.getElementById("btnImagemAnalise").style.display = "none";
+    document.getElementById("btnPdfAnalise").style.display = "none";
+    document.getElementById("fecharModal").style.display = "none";
 
     html2canvas(
         document.getElementById("areaAnaliseImagem"),
@@ -1881,7 +1897,9 @@ document.getElementById("btnImagemAnalise").onclick = function(){
         }
     ).then(canvas => {
 
-        botao.style.display = "block";
+        document.getElementById("btnImagemAnalise").style.display = "block";
+        document.getElementById("btnPdfAnalise").style.display = "block";
+        document.getElementById("fecharModal").style.display = "block";
 
         const link = document.createElement("a");
 
@@ -1892,6 +1910,113 @@ document.getElementById("btnImagemAnalise").onclick = function(){
         link.click();
 
     });
+
+};
+
+document.getElementById("btnPdfAnalise").onclick = async function(){
+
+    const botao = this;
+
+    botao.innerHTML = "⏳ Gerando PDF...";
+    botao.disabled = true;
+
+    const { jsPDF } = window.jspdf;
+
+const pdf = new jsPDF(
+    "l",
+    "mm",
+    "a4"
+);
+
+    const cmb =
+        document.getElementById("cmbColaborador");
+
+    const colaboradorOriginal =
+        cmb.value;
+
+    let primeiraPagina = true;
+
+    for(let i = 0; i < cmb.options.length; i++){
+
+        const nome =
+            cmb.options[i].value;
+
+        cmb.value = nome;
+
+        carregarAnalise(nome);
+
+        await new Promise(
+            r => setTimeout(r,700)
+        );
+
+document.getElementById("btnImagemAnalise").style.display = "none";
+document.getElementById("btnPdfAnalise").style.display = "none";
+
+const canvas =
+    await html2canvas(
+        document.getElementById("areaAnaliseImagem"),
+        {
+            scale:3,
+            useCORS:true,
+            backgroundColor:"#ffffff"
+        }
+    );
+
+document.getElementById("btnImagemAnalise").style.display = "block";
+document.getElementById("btnPdfAnalise").style.display = "block";
+
+        const img =
+            canvas.toDataURL(
+                "image/jpeg",
+                1.0
+            );
+
+        if(!primeiraPagina){
+            pdf.addPage();
+        }
+
+        primeiraPagina = false;
+
+       const paginaLargura =
+    pdf.internal.pageSize.getWidth();
+
+const paginaAltura =
+    pdf.internal.pageSize.getHeight();
+
+const largura =
+    paginaLargura - 10;
+
+const altura =
+    (canvas.height * largura) /
+    canvas.width;
+
+        pdf.setFontSize(10);
+
+        pdf.addImage(
+            img,
+            "JPEG",
+            10,
+            12,
+            largura,
+            altura
+        );
+    }
+
+    cmb.value =
+        colaboradorOriginal;
+
+    carregarAnalise(
+        colaboradorOriginal
+    );
+
+    pdf.save(
+        "Analises_Desempenho_Geral.pdf"
+    );
+
+    botao.innerHTML =
+        "📚 Gerar PDF Geral";
+
+    botao.disabled = false;
 
 };
 
@@ -2155,18 +2280,37 @@ const totalBipagem =
             </div>
         </div>
 
-        <div style="
-            background:#ff9800;
-            color:white;
-            padding:20px;
-            border-radius:15px;
-            text-align:center;
-        ">
+${ehEmpilhador ? `
+<div style="
+    background:#607d8b;
+    color:white;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+">
+    <div>UNIDADE</div>
+    <div style="font-size:32px;font-weight:bold;">
+        PALLETS
+    </div>
+</div>
+`
+:
+`
+<div style="
+    background:#ff9800;
+    color:white;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+">
 <div>BIPAGEM TOTAL</div>
 
 <div style="font-size:32px;font-weight:bold;">
     ${totalBipagem.toLocaleString("pt-BR")}
 </div>
+</div>
+`
+}
 
         </div>
 
@@ -2279,7 +2423,7 @@ datasets: [
     tension: 0,
     datalabels: { display: false }
   },
-  {
+...(ehEmpilhador ? [] : [{
     label: "Bipagem",
     data: registros.map(x => Number(x.bipagem || 0)),
     borderColor: "#ff9800",
@@ -2292,15 +2436,15 @@ datasets: [
     fill: false,
     tension: 0.3,
     datalabels: {
-      display: true,
-      color: "#000000",
-      font: { weight: "900", size: 15 },
-      textStrokeColor: "#ffffff",
-      textStrokeWidth: 4,
-      anchor: "end",
-      align: "top"
+        display: true,
+        color: "#000000",
+        font: { weight: "900", size: 15 },
+        textStrokeColor: "#ffffff",
+        textStrokeWidth: 4,
+        anchor: "end",
+        align: "top"
     }
-  }
+}])
 ]
   },
 
@@ -2401,5 +2545,6 @@ modal.style.display = "none";
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
