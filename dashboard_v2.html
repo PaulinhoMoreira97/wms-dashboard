@@ -617,18 +617,26 @@ margin-bottom:15px;
 📈 Análises
 </div>
 
-<div class="menu-item" id="menuRanking">
-🏆 Ranking
+<div class="menu-item" id="menuCrossdocking">
+🚚 Crossdocking
 </div>
+
 <div class="menu-item" id="menuEvolucao">
 📈 Evolução por Hora
 </div>
+
 <div class="menu-item" id="menuHistorico">
 📚 Histórico
 </div>
+
+<div class="menu-item" id="menuRanking">
+🏆 Ranking
+</div>
+
 <div class="menu-item" id="menuTimeline">
 📈 Timeline
 </div>
+
 </div>
 
 <div class="main">
@@ -1000,6 +1008,202 @@ setInterval(atualizarHoraETurno, 1000);
 const horaInicial = ultimaHora.substring(11) + ":00";
 const proximaHora = String(Number(ultimaHora.substring(11,13)) + 1).padStart(2,"0") + ":00:00";
 const dataGeracao = agora.toLocaleDateString("pt-BR") + " " + agora.toLocaleTimeString("pt-BR");
+
+// ======================================
+// 🚚 CROSSDOCKING
+// ======================================
+
+document.getElementById("menuCrossdocking").onclick = () => {
+
+const cross = dados.crossdocking || [];
+
+const totalRemessas = cross.length;
+
+const totalLojas =
+new Set(
+    cross.map(x => x.loja)
+).size;
+
+const totalResponsaveis =
+new Set(
+    cross.map(x => x.responsavel)
+).size;
+
+const quantidadeTotal =
+cross.reduce(
+    (a,b) => a + Number(b.quantidade || 0),
+    0
+);
+
+const dataPicking =
+cross.length > 0
+? cross[0].dataPicking
+: "-";
+
+let html = `
+
+<div class="modal-titulo" style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
+">
+
+<span>
+🚚 CROSSDOCKING
+</span>
+
+<button id="btnImagemCross"
+style="
+background:linear-gradient(135deg,#113d9a,#3367e2);
+color:white;
+border:none;
+padding:12px 22px;
+border-radius:10px;
+cursor:pointer;
+font-weight:700;
+">
+📸 Gerar Imagem
+</button>
+
+</div>
+
+<div id="areaCrossImagem">
+
+<div style="
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:15px;
+margin-bottom:25px;
+">
+
+<div style="background:#113d9a;color:white;padding:20px;border-radius:15px;text-align:center;">
+<div>Total Remessas</div>
+<div style="font-size:32px;font-weight:bold;">
+${totalRemessas.toLocaleString('pt-BR')}
+</div>
+</div>
+
+<div style="background:#00c853;color:white;padding:20px;border-radius:15px;text-align:center;">
+<div>Total Lojas</div>
+<div style="font-size:32px;font-weight:bold;">
+${totalLojas}
+</div>
+</div>
+
+<div style="background:#ff9800;color:white;padding:20px;border-radius:15px;text-align:center;">
+<div>Quantidade Total</div>
+<div style="font-size:32px;font-weight:bold;">
+${quantidadeTotal.toLocaleString('pt-BR')}
+</div>
+</div>
+
+<div style="background:#9c27b0;color:white;padding:20px;border-radius:15px;text-align:center;">
+<div>Responsáveis</div>
+<div style="font-size:32px;font-weight:bold;">
+${totalResponsaveis}
+</div>
+</div>
+
+<div style="background:#607d8b;color:white;padding:20px;border-radius:15px;text-align:center;">
+<div>Data Picking</div>
+<div style="font-size:24px;font-weight:bold;">
+${dataPicking}
+</div>
+</div>
+
+</div>
+
+<h2 style="
+background:#113d9a;
+color:white;
+padding:12px;
+text-align:center;
+border-radius:10px 10px 0 0;
+">
+🚚 DETALHAMENTO CROSSDOCKING
+</h2>
+
+<table>
+
+<tr>
+<th>Remessa</th>
+<th>Loja</th>
+<th>Material</th>
+<th>Descrição</th>
+<th>Qtd</th>
+<th>Documento</th>
+<th>Responsável</th>
+</tr>
+`;
+
+cross.forEach(item => {
+
+html += `
+<tr>
+
+<td>${item.remessa}</td>
+
+<td>${item.loja}</td>
+
+<td>${item.material}</td>
+
+<td style="text-align:center;">
+${item.descricao}
+</td>
+
+<td>
+${Number(item.quantidade).toLocaleString('pt-BR')}
+</td>
+
+<td>${item.documento}</td>
+
+<td>${item.responsavel}</td>
+
+</tr>
+`;
+
+});
+
+html += `
+</table>
+</div>
+`;
+
+document.getElementById("conteudoModal").innerHTML =
+html;
+
+modal.style.display = "block";
+
+document.getElementById("btnImagemCross").onclick =
+function(){
+
+html2canvas(
+document.getElementById("areaCrossImagem"),
+{
+scale:2,
+useCORS:true,
+backgroundColor:"#ffffff"
+}
+).then(canvas => {
+
+const link =
+document.createElement("a");
+
+link.download =
+"Crossdocking.png";
+
+link.href =
+canvas.toDataURL("image/png");
+
+link.click();
+
+});
+
+};
+
+};
 
 document.getElementById("menuHistorico").onclick = () => {
   const hist = dados.histProducao || [];
